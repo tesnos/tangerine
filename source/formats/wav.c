@@ -17,87 +17,92 @@ int wav_magic2 = 0x666d7420;
 //"data" 
 //int wavmagic3 = 0x64617461;
 
-int get_samplerate()
+int get_sampleratewav()
 {
-  return samplerate;
+	return 48000;
 }
 
-int get_channels()
+int get_channelswav()
 {
-  return numchannels;
+	return numchannels;
 }
 
-void read_samples(void* audiobuf)
+int get_bufsizewav()
 {
-  fread(audiobuf, 1, WAVBUFSIZE * numchannels, audiofile);
+	return WAVBUFSIZE;
 }
 
-int get_fpos()
+void read_sampleswav(void* audiobuf)
 {
-  return ftell(audiofile);
+	fread(audiobuf, 1, WAVBUFSIZE * numchannels, audiofile);
 }
 
-int process_header()
+int get_fposwav()
 {
-  int verificationerrs = 0;
-  int errnum;
-  
-  if ((headerbuf[0] << 24) + (headerbuf[1] << 16) + (headerbuf[2] << 8) + (headerbuf[3]) != wav_magic0)
-  {
-    verificationerrs++;
-	errnum = WAVERR_WRONG_MAGIC;
-  }
-  
-  if ((headerbuf[8] << 24) + (headerbuf[9] << 16) + (headerbuf[10] << 8) + (headerbuf[11]) != wav_magic1)
-  {
-    verificationerrs++;
-	errnum = WAVERR_WRONG_MAGIC;
-  }
-  
-  if ((headerbuf[12] << 24) + (headerbuf[13] << 16) + (headerbuf[14] << 8) + (headerbuf[15]) != wav_magic2)
-  {
-    verificationerrs++;
-	errnum = WAVERR_WRONG_MAGIC;
-  }
-  
-  sample_rate = (headerbuf[24]) + ((headerbuf[25] << 8) - 0xFFFF0000) + (headerbuf[26] << 16) + (headerbuf[27] << 24) + 0x100;
-  num_channels = (headerbuf[22]) + (headerbuf[23] << 8);
-  
-  if (numchannels > 2)
-  {
-    verificationerrs++;
-	errnum = WAVERR_EXTRA_CHANNELS;
-  }
-  
-  if (((headerbuf[16]) + (headerbuf[17] << 8) + (headerbuf[18] << 16) + (headerbuf[19] << 24) != 16) || ((headerbuf[20]) + (headerbuf[21] << 8) != 1))
-  {
-    verificationerrs++;
-	errnum = WAVERR_NOT_PCM;
-  }
-  
-  if (verificationerrs > 0)
-  {
-    if (verificationerrs > 1)
+	return ftell(audiofile);
+}
+
+int process_headerwav()
+{
+	int verificationerrs = 0;
+	int errnum;
+	
+	if ((headerbuf[0] << 24) + (headerbuf[1] << 16) + (headerbuf[2] << 8) + (headerbuf[3]) != wav_magic0)
 	{
-      return verificationerrs + 10;
-    }
+		verificationerrs++;
+		errnum = WAVERR_WRONG_MAGIC;
+	}
+	
+	if ((headerbuf[8] << 24) + (headerbuf[9] << 16) + (headerbuf[10] << 8) + (headerbuf[11]) != wav_magic1)
+	{
+		verificationerrs++;
+		errnum = WAVERR_WRONG_MAGIC;
+	}
+	
+	if ((headerbuf[12] << 24) + (headerbuf[13] << 16) + (headerbuf[14] << 8) + (headerbuf[15]) != wav_magic2)
+	{
+		verificationerrs++;
+		errnum = WAVERR_WRONG_MAGIC;
+	}
+	
+	samplerate = (headerbuf[24]) + (headerbuf[25] << 8) + (headerbuf[26] << 16) + (headerbuf[27] << 24) + 0x100;
+	numchannels = (headerbuf[22]) + (headerbuf[23] << 8);
+	
+	if (numchannels > 2)
+	{
+		verificationerrs++;
+		errnum = WAVERR_EXTRA_CHANNELS;
+	}
+	
+	if (((headerbuf[16]) + (headerbuf[17] << 8) + (headerbuf[18] << 16) + (headerbuf[19] << 24) != 16) || ((headerbuf[20]) + (headerbuf[21] << 8) != 1))
+	{
+		verificationerrs++;
+		errnum = WAVERR_NOT_PCM;
+	}
+	
+	if (verificationerrs > 0)
+	{
+		if (verificationerrs > 1)
+	{
+			return verificationerrs + 10;
+		}
+		else
+		{
+			return errnum;
+		}
+	}
 	else
-    {
-      return errnum;
-    }
-  }
-  else
-  {
-    return WAVERR_NONE;
-  }
+	{
+		return WAVERR_NONE;
+	}
 }
 
-int init_audio(FILE* wavfile)
+int init_audiowav(FILE* wavfile)
 {
-  audiofile = wavfile;
-  fseek(audiofile, 0, SEEK_SET);
-  fread(headerbuf, 1, 45, audiofile);
-  fseek(audiofile, 44, SEEK_SET);
-  
-  return process_header();
+	audiofile = wavfile;
+	fseek(audiofile, 0, SEEK_SET);
+	fread(headerbuf, 1, 45, audiofile);
+	fseek(audiofile, 44, SEEK_SET);
+	
+	return process_headerwav();
 }

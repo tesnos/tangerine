@@ -2,6 +2,7 @@
 #define DR_FLAC_NO_WIN32_IO
 
 #include "dr_flac.h"
+
 #include "flac.h"
 
 FILE* audiofile;
@@ -14,75 +15,74 @@ drflac* pFlac;
 //"fLaC"
 int flac_magic0 = 0x52494646;
 
-int get_samplerate()
+int get_samplerateflac()
 {
-  return pFlac->sampleRate;
+	return pFlac->sampleRate;
 }
 
-int get_channels()
+int get_channelsflac()
 {
-  return pFlac->channels;
+	return pFlac->channels;
 }
 
-void read_samples(void* audiobuf)
+void read_samplesflac(void* audiobuf)
 {
-  drflac_read_s16(pFlac, FLACBUFSIZE * numchannels, audiobuf);
+	drflac_read_s16(pFlac, FLACBUFSIZE * numchannels, audiobuf);
 }
 
-int get_fpos()
+int get_fposflac()
 {
-  return ftell(audiofile);
+	return ftell(audiofile);
 }
 
-int process_header()
+int get_bufsizeflac()
 {
-  int verificationerrs = 0;
-  int errnum;
-  
-  if ((headerbuf[0] << 24) + (headerbuf[1] << 16) + (headerbuf[2] << 8) + (headerbuf[3]) != flac_magic0)
-  {
-    verificationerrs++;
-	errnum = FLACERR_WRONG_MAGIC;
-  }
-  
-  sample_rate = get_samplerate()
-  num_channels = get_channels();
-  
-  if (get_channels() > 2)
-  {
-    verificationerrs++;
-	errnum = FLACRR_EXTRA_CHANNELS;
-  }
-  
-  if (verificationerrs > 0)
-  {
-    if (verificationerrs > 1)
+	return FLACBUFSIZE;
+}
+
+int process_headerflac()
+{
+	int verificationerrs = 0;
+	int errnum;
+	
+	// if ((headerbuf[0] << 24) + (headerbuf[1] << 16) + (headerbuf[2] << 8) + (headerbuf[3]) != flac_magic0)
+	// {
+		// verificationerrs++;
+		// errnum = FLACERR_WRONG_MAGIC;
+	// }
+	
+	samplerate = get_samplerateflac();
+	numchannels = get_channelsflac();
+	
+	if (numchannels > 2)
 	{
-      return FLACERR_MULTIPLE;
-    }
+		verificationerrs++;
+		errnum = FLACERR_EXTRA_CHANNELS;
+	}
+	
+	if (verificationerrs > 0)
+	{
+		if (verificationerrs > 1)
+		{
+			return FLACERR_MULTIPLE;
+		}
+		else
+		{
+			return errnum;
+		}
+	}
 	else
-    {
-      return errnum;
-    }
-  }
-  else
-  {
-    return FLACERR_NONE;
-  }
+	{
+		return numchannels;
+	}
 }
 
-int init_audio(FILE* flacfile)
+int init_audioflac(const char* filename)
 {
-  audiofile = flacfile;
-  
-  fseek(audiofile, 0, SEEK_SET);
-  fread(headerbuf, 1, 5, audiofile);
-  fseek(audiofile, 0, SEEK_SET);
-  
-  pFlac = drflac_open(fread, fseek, audiofile);
-  if (pFlac == NULL) {
-    return FLACERR_DF_FAIL;
-  }
-  
-  return process_header();
+	pFlac = drflac_open_file(filename);
+	if (pFlac == NULL) {
+		return FLACERR_DF_FAIL;
+	}
+	
+	return process_headerflac();
 }

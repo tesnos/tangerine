@@ -28,7 +28,7 @@ include $(DEVKITARM)/3ds_rules
 #---------------------------------------------------------------------------------
 TARGET		      :=	$(notdir $(CURDIR))
 BUILD		        :=	build
-SOURCES		      :=	source/pp2d source
+SOURCES		      :=	source source/pp2d source/formats
 INCLUDES	      :=	include
 APP_TITLE       :=  tangerine
 APP_DESCRIPTION :=  An audio player

@@ -5,11 +5,11 @@
 //Errors that may be returned by process_header
 typedef enum
 {
-  FLACERR_NONE = 0,
-  FLACERR_WRONG_MAGIC = 1,
-  FLACERR_DF_FAIL = 2,
-  FLACRR_EXTRA_CHANNELS = 3,
-  FLACERR_MULTIPLE = 4
+	FLACERR_NONE = 0,
+	FLACERR_WRONG_MAGIC = 1,
+	FLACERR_DF_FAIL = 2,
+	FLACERR_EXTRA_CHANNELS = 3,
+	FLACERR_MULTIPLE = 4
 } FLAC_Errors;
 
 /**
@@ -17,39 +17,46 @@ typedef enum
  * 
  * @return The sample rate of the music
  */
-int get_samplerate(void);
+int get_samplerateflac(void);
 
 /**
  * @brief Gets the number of channels of the music
  * 
  * @return The number of channels of the music
  */
-int get_channels(void);
+int get_channelsflac(void);
 
 /**
- * @brief Reads WAVBUFSIZE * numchannels bytes of data from the wavfile into audiobuf
+ * @brief Reads FLACBUFSIZE * numchannels bytes of data from the file into audiobuf
  * 
  * @param audiobuf Buffer to read data into
  */
-void read_samples(void* audiobuf);
+void read_samplesflac(void* audiobuf);
 
 /**
  * @brief Gets the the position within the file
  * 
  * @return The the position within the file
  */
-int get_fpos();
+int get_fposflac(void);
 
 /**
- * @brief Verifies that a file is a proper wav file and extracts the information
+ * @brief Gets the size of the buffer for flac files
  * 
- * @return One of WAV_Errors
+ * @return The size of the buffer for flac files
  */
-int process_header(void);
+int get_bufsizeflac(void);
 
 /**
- * @brief Initializes wav playback from a wav file, extracting the information and verifying the file to be a wav file
- *
- * @param wavfile Pointer to the .wav file
+ * @brief Verifies that a file is a proper flac file and extracts the information
+ * 
+ * @return One of FLAC_Errors
  */
-int init_audio(FILE* wavfile);
+int process_headerflac(void);
+
+/**
+ * @brief Initializes flac playback from a flac file, extracting the information and verifying the file to be a flac file
+ *
+ * @param filename Name of the file to play
+ */
+int init_audioflac(const char* filename);
