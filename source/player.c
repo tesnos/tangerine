@@ -60,9 +60,9 @@ void exitplayer()
 
 int recognize(FILE* unknownfile)
 {
-	int8_t header[5];
+	int8_t header[4];
 	int wav_magic = 0x52494646;
-	int flac_magic = 0x52494646;
+	int flac_magic = 0x664c6143;
 	
 	fseek(unknownfile, 0, SEEK_SET);
 	fread(header, 1, 5, unknownfile);
@@ -138,6 +138,10 @@ int playfile(const char* filename)
 		buffersize = get_bufsizeflac();
 		samplerate = get_samplerateflac();
 		numchannels = get_channelsflac();
+	}
+	if (format == FORMAT_NONE)
+	{
+		return 50;
 	}
 	
 	if (numchannels == 2)

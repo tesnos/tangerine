@@ -28,7 +28,7 @@ void errexit(int errcode)
 	
 		gui_prepare_frame(GFX_TOP, GFX_LEFT);
 		
-		gui_printi(20, 20, col_white, errcode);
+		gui_printi(20, 20, col_black, errcode);
 		
 		gui_finish_frame();
 	}
@@ -89,7 +89,7 @@ int main()
 		
 		buffersfilled = play_audio();
 		
-		gui_printi(20, 120, col_black, buffersfilled);
+		gui_printi(0, 120, col_black, buffersfilled);
 		
 		//Finish drawing graphics
 		gui_finish_frame();
@@ -103,8 +103,12 @@ int main()
 				strcat(fileloc, getcurdir());
 				strcat(fileloc, "/");
 				strcat(fileloc, direntries[dirpos]);
-				playfile(fileloc);
+				int beginplay = playfile(fileloc);
 				appstate = 1;
+				if (beginplay > 0)
+				{
+					errexit(beginplay);
+				}
 			}
 			
 			if (kDown & KEY_DDOWN)

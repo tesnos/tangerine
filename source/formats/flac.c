@@ -1,9 +1,9 @@
+#include "flac.h"
+
 #define DR_FLAC_IMPLEMENTATION
-#define DR_FLAC_NO_WIN32_IO
+#define DR_FLAC_BUFFER_SIZE FLACBUFSIZE
 
 #include "dr_flac.h"
-
-#include "flac.h"
 
 FILE* audiofile;
 int samplerate;
@@ -13,7 +13,7 @@ int8_t headerbuf[45];
 drflac* pFlac;
 
 //"fLaC"
-int flac_magic0 = 0x52494646;
+int flac_magic0 = 0x664c6143;
 
 int get_samplerateflac()
 {
@@ -27,12 +27,13 @@ int get_channelsflac()
 
 void read_samplesflac(void* audiobuf)
 {
-	drflac_read_s16(pFlac, FLACBUFSIZE * numchannels, audiobuf);
+	drflac_read_s16(pFlac, FLACBUFSIZE, audiobuf);
 }
 
 int get_fposflac()
 {
-	return ftell(audiofile);
+	//return ftell(audiofile);
+	return 0;
 }
 
 int get_bufsizeflac()
@@ -44,12 +45,6 @@ int process_headerflac()
 {
 	int verificationerrs = 0;
 	int errnum;
-	
-	// if ((headerbuf[0] << 24) + (headerbuf[1] << 16) + (headerbuf[2] << 8) + (headerbuf[3]) != flac_magic0)
-	// {
-		// verificationerrs++;
-		// errnum = FLACERR_WRONG_MAGIC;
-	// }
 	
 	samplerate = get_samplerateflac();
 	numchannels = get_channelsflac();
@@ -73,7 +68,7 @@ int process_headerflac()
 	}
 	else
 	{
-		return numchannels;
+		return FLACERR_NONE;
 	}
 }
 
