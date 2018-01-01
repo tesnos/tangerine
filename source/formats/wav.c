@@ -47,19 +47,23 @@ int process_headerwav()
 	int verificationerrs = 0;
 	int errnum;
 	
-	if ((headerbuf[0] << 24) + (headerbuf[1] << 16) + (headerbuf[2] << 8) + (headerbuf[3]) != wav_magic0)
+	int magic0 = (headerbuf[0] << 24) + (headerbuf[1] << 16) + (headerbuf[2] << 8) + (headerbuf[3]);
+	int magic1 = (headerbuf[8] << 24) + (headerbuf[9] << 16) + (headerbuf[10] << 8) + (headerbuf[11]);
+	int magic2 = (headerbuf[12] << 24) + (headerbuf[13] << 16) + (headerbuf[14] << 8) + (headerbuf[15]);
+	
+	if (magic0 != wav_magic0)
 	{
 		verificationerrs++;
 		errnum = WAVERR_WRONG_MAGIC;
 	}
 	
-	if ((headerbuf[8] << 24) + (headerbuf[9] << 16) + (headerbuf[10] << 8) + (headerbuf[11]) != wav_magic1)
+	if (magic1 != wav_magic1)
 	{
 		verificationerrs++;
 		errnum = WAVERR_WRONG_MAGIC;
 	}
 	
-	if ((headerbuf[12] << 24) + (headerbuf[13] << 16) + (headerbuf[14] << 8) + (headerbuf[15]) != wav_magic2)
+	if (magic2 != wav_magic2)
 	{
 		verificationerrs++;
 		errnum = WAVERR_WRONG_MAGIC;

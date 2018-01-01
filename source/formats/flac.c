@@ -6,9 +6,6 @@
 #include "dr_flac.h"
 
 FILE* audiofile;
-int samplerate;
-int numchannels;
-int8_t headerbuf[45];
 
 drflac* pFlac;
 
@@ -46,8 +43,8 @@ int process_headerflac()
 	int verificationerrs = 0;
 	int errnum;
 	
-	samplerate = get_samplerateflac();
-	numchannels = get_channelsflac();
+	int samplerate = get_samplerateflac();
+	int numchannels = get_channelsflac();
 	
 	if (numchannels > 2)
 	{

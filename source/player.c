@@ -31,6 +31,10 @@ void fill_buffer(void* audioBuffer, size_t size)
 	{
 		read_samplesflac(audioBuffer);
 	}
+	if (format == FORMAT_MP3)
+	{
+		read_samplesmp3(audioBuffer);
+	}
 	
 	DSP_FlushDataCache(audioBuffer, size);
 }
@@ -63,6 +67,8 @@ int recognize(FILE* unknownfile)
 	int8_t header[4];
 	int wav_magic = 0x52494646;
 	int flac_magic = 0x664c6143;
+	int mp3_magic0 = 0x494433;
+	int mp3_magic1 = 0xFFFB;
 	
 	fseek(unknownfile, 0, SEEK_SET);
 	fread(header, 1, 5, unknownfile);
@@ -75,6 +81,10 @@ int recognize(FILE* unknownfile)
 	else if ((header[0] << 24) + (header[1] << 16) + (header[2] << 8) + (header[3]) == flac_magic)
 	{
 		return FORMAT_FLAC;
+	}
+	else if (((header[0] << 16) + (header[1] << 8) + (header[2]) == mp3_magic0) || ((header[0] << 8) + (header[1]) == mp3_magic1))
+	{
+		return FORMAT_MP3;
 	}
 	
 	return FORMAT_NONE;
@@ -138,6 +148,19 @@ int playfile(const char* filename)
 		buffersize = get_bufsizeflac();
 		samplerate = get_samplerateflac();
 		numchannels = get_channelsflac();
+	}
+	if (format == FORMAT_FLAC)
+	{
+		fclose(afile);
+		success = init_audiomp3(filename);
+		if (success > 0)
+		{
+			return success;
+		}
+		
+		buffersize = get_bufsizemp3();
+		samplerate = get_sampleratemp3();
+		numchannels = get_channelsmp3();
 	}
 	if (format == FORMAT_NONE)
 	{

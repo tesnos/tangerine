@@ -4,13 +4,15 @@
 
 #include "formats/wav.h"
 #include "formats/flac.h"
+#include "formats/mp3.h"
 
 //The different audio formats
 typedef enum
 {
 	FORMAT_NONE = 0,
 	FORMAT_WAV = 1,
-	FORMAT_FLAC = 2
+	FORMAT_FLAC = 2,
+	FORMAT_MP3 = 3
 } Formats;
 
 /**
