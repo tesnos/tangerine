@@ -40,6 +40,8 @@ void read_samplesflac(void* audiobuf);
  */
 int get_fposflac(void);
 
+void exitflac(void);
+
 /**
  * @brief Gets the size of the buffer for flac files
  * 

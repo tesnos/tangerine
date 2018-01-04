@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdbool.h>
 
 #include "gui.h"
 #include "player.h"
@@ -40,7 +41,7 @@ int main()
 {
 	//Initialize the hid (human interface device (controls)), player (handles audio), and pp2d (graphics)
 	hidInit();
-	playerInit();
+	bool* playing = playerInit();
 	files_init();
 	
 	//Holds which keys are down/up
@@ -77,10 +78,6 @@ int main()
 		//Start drawing this frame's graphics
 		gui_prepare_frame(GFX_TOP, GFX_LEFT);
 		
-		//gui_printc(0, 0, col_black, direntries[dirpos]);
-		//gui_printi(0, 40, col_black, dirsize);
-		//gui_printi(0, 80, col_black, dirpos);
-		
 		gui_draw_frame(appstate);
 		
 		gui_prepare_frame(GFX_BOTTOM, GFX_LEFT);
@@ -89,7 +86,9 @@ int main()
 		
 		buffersfilled = play_audio();
 		
-		gui_printi(0, 120, col_black, buffersfilled);
+		gui_draw_play(*playing);
+		
+		//gui_printi(0, 120, col_black, buffersfilled);
 		
 		//Finish drawing graphics
 		gui_finish_frame();
@@ -131,6 +130,14 @@ int main()
 			//Playback controls
 			if (kDown & KEY_A){
 				toggle_playback();
+			}
+			
+			if (kDown & KEY_B){
+				appstate = 0;
+				if (*playing)
+				{
+					toggle_playback();
+				}
 			}
 		}
 	}

@@ -25,8 +25,22 @@ void gui_init(char** entrytableptr, int* dirposptrinput)
 	pp2d_set_screen_color(GFX_BOTTOM, clear_color_bot);
 	
 	pp2d_load_texture_png(0, "orangetest.png");
+	pp2d_load_texture_png(1, "play.png");
 	
 	pp2d_set_3D(1);
+}
+
+void gui_draw_play(bool playing)
+{
+	if (!playing)
+	{
+		pp2d_draw_texture_scale(1, 145, 195, 0.4f, 0.4f);
+	}
+	else
+	{
+		pp2d_draw_rectangle(145, 195, 10, 40, col_white);
+		pp2d_draw_rectangle(160, 195, 10, 40, col_white);
+	}
 }
 
 void gui_prepare_frame(gfxScreen_t target, gfx3dSide_t side)
@@ -42,7 +56,7 @@ void gui_prepare_frame(gfxScreen_t target, gfx3dSide_t side)
 	{
 		pp2d_draw_on(targetscreen, side);
 	}
-	//And then clear it (top and bottom screen are different sizes, 400 andn 320 respectively)
+	//And then clear it (top and bottom screen are different sizes, 400 and 320 respectively)
 	if (targetscreen == GFX_TOP)
 	{
 		pp2d_draw_rectangle(0, 0, 400, 240, clear_color_top);
@@ -58,12 +72,12 @@ void gui_printi(float x, float y, u32 color, int value)
 	//Convert whatever value given into a char array
 	snprintf(str, sizeof(str), "%zu", value);
 	//and draw it to the screen
-	pp2d_draw_text(x, y, 1, 1, color, str);
+	pp2d_draw_text_wrap(x, y, 1, 1, color, 320, str);
 }
 
 void gui_printc(float x, float y, u32 color, char* value)
 {
-	pp2d_draw_text(x, y, 1, 1, color, value);
+	pp2d_draw_text_wrap(x, y, 1, 1, color, 320, value);
 }
 
 void gui_draw_frame(int state)
@@ -79,13 +93,14 @@ void gui_draw_frame(int state)
 			//Logo
 			pp2d_draw_texture(0, 112, 32);
 			
-			//Upper/Lower bars
+			//Upper bar
 			pp2d_draw_rectangle(0, 0, 400, 24, col_orange);
-			pp2d_draw_rectangle(0, 216, 400, 24, col_orange);
 		}
 		
 		if (state == 0)
 		{
+			//Upper bar
+			pp2d_draw_rectangle(0, 0, 400, 24, col_orange);
 			gui_printc(0, 0, col_black, entrytable[*dirposptr]);
 		}
 	}
@@ -93,14 +108,17 @@ void gui_draw_frame(int state)
 	{
 		if (state == 1)
 		{
-			//Upper/Lower bars
-			pp2d_draw_rectangle(0, 0, 320, 24, col_orange);
-			pp2d_draw_rectangle(0, 216, 320, 24, col_orange);
+			//Lower bar
+			pp2d_draw_rectangle(0, 192, 320, 48, col_orange);
 		}
 		
 		if (state == 0)
 		{
+			//Fast Forward
+			pp2d_draw_texture_scale(1, 145, 195, 0.4f, 0.4f);
 			
+			//Lower bar
+			pp2d_draw_rectangle(0, 192, 320, 48, col_orange);
 		}
 	}
 }

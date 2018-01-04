@@ -42,6 +42,14 @@ int get_fposwav()
 	return ftell(audiofile);
 }
 
+void exitwav()
+{
+	fclose(audiofile);
+	samplerate = 0;
+	numchannels = 0;
+	memset(headerbuf, 0, sizeof(headerbuf));
+}
+
 int process_headerwav()
 {
 	int verificationerrs = 0;

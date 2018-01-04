@@ -22,6 +22,8 @@
  */
 void gui_init(char** entrytableptr, int* dirposptrinput);
 
+void gui_draw_play(bool playing);
+
 /**
  * @brief Prepares to begin drawing to screen target, on side
  * 
@@ -29,7 +31,6 @@ void gui_init(char** entrytableptr, int* dirposptrinput);
  * @param side Which 3d side to draw on, GFX_LEFT or GFX_RIGHT
  */
 void gui_prepare_frame(gfxScreen_t target, gfx3dSide_t side);
-
 
 /**
  * @brief Convert any value to a char array and draw it to a specified point w/ a specified color

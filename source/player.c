@@ -1,7 +1,7 @@
 #include "player.h"
 
 //What format the audio is in
-int format;
+int format = FORMAT_NONE;
 
 //Buffers to hold audio data
 int16_t* audioBuffer0 = 0;
@@ -90,7 +90,7 @@ int recognize(FILE* unknownfile)
 	return FORMAT_NONE;
 }
 
-void playerInit()
+bool* playerInit()
 {
 	//Initialize the DSP (audio) chip for use
 	ndspInit();
@@ -111,10 +111,37 @@ void playerInit()
 	mix[0] = 1.0;
 	mix[1] = 1.0;
 	ndspChnSetMix(0, mix);
+	
+	return &playing;
+}
+
+void ceaseplayback()
+{
+	if (format == FORMAT_NONE) { return; }
+	
+	if (format == FORMAT_WAV)
+	{
+		exitwav();
+	}
+	else if (format == FORMAT_FLAC)
+	{
+		exitflac();
+	}
+	else if (format == FORMAT_MP3)
+	{
+		exitmp3();
+	}
+	
+	playing = false;
 }
 
 int playfile(const char* filename)
 {
+	//Reset and
+	ndspChnReset(0);
+	//clear
+	ndspChnWaveBufClear(0);
+	
 	int success;
 	
 	//Open the audio file
@@ -139,6 +166,7 @@ int playfile(const char* filename)
 	if (format == FORMAT_FLAC)
 	{
 		fclose(afile);
+		svcOutputDebugString("flac\0", 5);
 		success = init_audioflac(filename);
 		if (success > 0)
 		{
@@ -149,9 +177,10 @@ int playfile(const char* filename)
 		samplerate = get_samplerateflac();
 		numchannels = get_channelsflac();
 	}
-	if (format == FORMAT_FLAC)
+	if (format == FORMAT_MP3)
 	{
 		fclose(afile);
+		svcOutputDebugString("mp3\0", 4);
 		success = init_audiomp3(filename);
 		if (success > 0)
 		{
@@ -201,6 +230,8 @@ int playfile(const char* filename)
 	ndspChnWaveBufAdd(0, &waveBuf[0]);
 	ndspChnWaveBufAdd(0, &waveBuf[1]);
 	
+	playing = true;
+	
 	return 0;
 }
 
@@ -232,5 +263,5 @@ int play_audio()
 void toggle_playback()
 {
 	playing = !playing;
-	ndspChnSetPaused(0, playing);
+	ndspChnSetPaused(0, !playing);
 }

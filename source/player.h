@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <3ds.h>
+#include <stdbool.h>
 
 #include "formats/wav.h"
 #include "formats/flac.h"
@@ -40,7 +41,7 @@ int recognize(FILE* unknownfile);
 /**
  * @brief Initializes all the necessary things to prepare for audio playback
  */
-void playerInit(void);
+bool* playerInit(void);
 
 /**
  * @brief Starts to play audio.wav

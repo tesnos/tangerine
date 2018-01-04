@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #define WAVBUFSIZE 1024 * 16
 
@@ -39,6 +40,8 @@ void read_sampleswav(void* audiobuf);
  * @return The the position within the file
  */
 int get_fposwav(void);
+
+void exitwav(void);
 
 /**
  * @brief Gets the size of the buffer for wav files

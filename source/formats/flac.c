@@ -5,8 +5,6 @@
 
 #include "dr_flac.h"
 
-FILE* audiofile;
-
 drflac* pFlac;
 
 //"fLaC"
@@ -33,6 +31,12 @@ int get_fposflac()
 	return 0;
 }
 
+void exitflac()
+{
+	drflac_close(pFlac);
+	pFlac = NULL;
+}
+
 int get_bufsizeflac()
 {
 	return FLACBUFSIZE;
@@ -43,7 +47,6 @@ int process_headerflac()
 	int verificationerrs = 0;
 	int errnum;
 	
-	int samplerate = get_samplerateflac();
 	int numchannels = get_channelsflac();
 	
 	if (numchannels > 2)
