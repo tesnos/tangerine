@@ -43,12 +43,18 @@ int recognize(FILE* unknownfile);
  */
 bool* playerInit(void);
 
+void ceaseplayback(void);
+
+void seekaudio(int percentage);
+
 /**
  * @brief Starts to play audio.wav
  * 
  * @return Success or failure code
  */
 int playfile(const char* filename);
+
+int get_progress(void);
 
 /**
  * @brief Call this in the main loop of the program, checks if buffers are done and returns which ones are refilled

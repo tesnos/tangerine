@@ -1,5 +1,6 @@
 #include <mpg123.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 #define MP3BUFSIZE 4096
 
@@ -17,6 +18,8 @@ typedef enum
  * @return The sample rate of the music
  */
 int get_sampleratemp3(void);
+
+int get_progressmp3(void);
 
 /**
  * @brief Gets the number of channels of the music
@@ -40,6 +43,8 @@ void read_samplesmp3(void* audiobuf);
 int get_fposmp3(void);
 
 void exitmp3(void);
+
+void seekmp3(int percentage);
 
 /**
  * @brief Gets the size of the buffer for mp3 files

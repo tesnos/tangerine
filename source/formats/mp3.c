@@ -4,12 +4,17 @@ mpg123_handle* mpg;
 long int samplerate;
 int numchannels;
 int encoding;
-bool done = false;
+bool mp3done = false;
 size_t bytesread;
 
 int get_sampleratemp3()
 {
 	return samplerate;
+}
+
+int get_progressmp3()
+{
+	return ((mpg123_tell(mpg) * 100) / mpg123_length(mpg));
 }
 
 int get_channelsmp3()
@@ -19,12 +24,12 @@ int get_channelsmp3()
 
 void read_samplesmp3(void* audiobuf)
 {
-	if (done) { return; }
+	if (mp3done) { return; }
 	
 	mpg123_read(mpg, audiobuf, MP3BUFSIZE * numchannels, &bytesread);
 	if (bytesread < MP3BUFSIZE * numchannels)
 	{
-		done = true;
+		mp3done = true;
 	}
 }
 
@@ -39,8 +44,13 @@ void exitmp3()
 	mpg = NULL;
 	samplerate = 0;
 	numchannels = 0;
-	done = false;
+	mp3done = false;
 	bytesread = 0;
+}
+
+void seekmp3(int percentage)
+{
+	mpg123_seek(mpg, (int) (mpg123_length(mpg) * (percentage / 100.0)), SEEK_SET);
 }
 
 int get_bufsizemp3()

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 
 #define FLACBUFSIZE 4096
 
@@ -19,6 +20,8 @@ typedef enum
  */
 int get_samplerateflac(void);
 
+int get_progressflac(void);
+
 /**
  * @brief Gets the number of channels of the music
  * 
@@ -33,14 +36,9 @@ int get_channelsflac(void);
  */
 void read_samplesflac(void* audiobuf);
 
-/**
- * @brief Gets the the position within the file
- * 
- * @return The the position within the file
- */
-int get_fposflac(void);
-
 void exitflac(void);
+
+void seekflac(int percentage);
 
 /**
  * @brief Gets the size of the buffer for flac files

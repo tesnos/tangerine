@@ -19,7 +19,7 @@ int16_t numchannels;
 ndspWaveBuf waveBuf[2];
 
 //Is the audio playing?
-bool playing = true;
+bool playing = false;
 
 void fill_buffer(void* audioBuffer, size_t size)
 {
@@ -135,6 +135,34 @@ void ceaseplayback()
 	playing = false;
 }
 
+void seekaudio(int percentage)
+{
+	if (format == FORMAT_NONE) { return; }
+	
+	if (playing)
+	{
+		toggle_playback();
+	}
+	
+	if (format == FORMAT_WAV)
+	{
+		seekwav(percentage);
+	}
+	else if (format == FORMAT_FLAC)
+	{
+		seekflac(percentage);
+	}
+	else if (format == FORMAT_MP3)
+	{
+		seekmp3(percentage);
+	}
+	
+	if (!playing)
+	{
+		toggle_playback();
+	}
+}
+
 int playfile(const char* filename)
 {
 	//Reset and
@@ -150,10 +178,12 @@ int playfile(const char* filename)
 	//Figure out what format the audio is
 	format = recognize(afile);
 	
+	fclose(afile);
 	//Try and open the file, get some information if it succeeds
 	if (format == FORMAT_WAV)
 	{
-		success = init_audiowav(afile);
+		svcOutputDebugString("wav\0", 4);
+		success = init_audiowav(filename);
 		if (success > 0)
 		{
 			return success;
@@ -165,7 +195,6 @@ int playfile(const char* filename)
 	}
 	if (format == FORMAT_FLAC)
 	{
-		fclose(afile);
 		svcOutputDebugString("flac\0", 5);
 		success = init_audioflac(filename);
 		if (success > 0)
@@ -179,7 +208,6 @@ int playfile(const char* filename)
 	}
 	if (format == FORMAT_MP3)
 	{
-		fclose(afile);
 		svcOutputDebugString("mp3\0", 4);
 		success = init_audiomp3(filename);
 		if (success > 0)
@@ -235,29 +263,39 @@ int playfile(const char* filename)
 	return 0;
 }
 
+int get_progress()
+{
+	if (format == FORMAT_WAV)
+	{
+		return get_progresswav();
+	}
+	if (format == FORMAT_FLAC)
+	{
+		return get_progressflac();
+	}
+	if (format == FORMAT_MP3)
+	{
+		return get_progressmp3();
+	}
+	return 0;
+}
+
 int play_audio()
 {
-	int returnval = 0;
-	
 	//Checks if the audio data inside the buffers is done playing and refills + requeues them if so
 	if (waveBuf[0].status == NDSP_WBUF_DONE) {
 			fill_buffer(waveBuf[0].data_pcm16, buffersize * numchannels);
 			
 			ndspChnWaveBufAdd(0, &waveBuf[0]);
-			
-			returnval++;
-			returnval++;
 	}
 	
 	if (waveBuf[1].status == NDSP_WBUF_DONE) {
 			fill_buffer(waveBuf[1].data_pcm16, buffersize * numchannels);
 			
 			ndspChnWaveBufAdd(0, &waveBuf[1]);
-			
-			returnval++;
 	}
 	
-	return samplerate;
+	return get_progress();
 }
 
 void toggle_playback()

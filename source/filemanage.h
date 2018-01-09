@@ -6,6 +6,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+//#include "player.h"
+
 void files_init(void);
 
 void startread(char* dirpath);
@@ -18,7 +20,13 @@ char* getentry(void);
 
 void endread(void);
 
+int recognizefiletype(FILE* unknownfile);
+
 int getdirsize(void);
+
+int getalldirsize(void);
+
+int detectfiletype(char* filename);
 
 void resetdir(void);
 

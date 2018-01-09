@@ -1,16 +1,16 @@
 #include <stdio.h>
-#include <string.h>
+#include <stdbool.h>
 
-#define WAVBUFSIZE 1024 * 16
+#define DR_WAV_IMPLEMENTATION
+#define WAVBUFSIZE 4096
 
 //Errors that may be returned by process_header
 typedef enum
 {
 	WAVERR_NONE = 0,
-	WAVERR_WRONG_MAGIC = 1,
+	WAVERR_DW_FAIL = 1,
 	WAVERR_EXTRA_CHANNELS = 2,
-	WAVERR_NOT_PCM = 3,
-	WAVERR_MULTIPLE = 4
+	WAVERR_MULTIPLE = 3
 } WAV_Errors;
 
 /**
@@ -19,6 +19,8 @@ typedef enum
  * @return The sample rate of the music
  */
 int get_sampleratewav(void);
+
+int get_progresswav(void);
 
 /**
  * @brief Gets the number of channels of the music
@@ -34,14 +36,9 @@ int get_channelswav(void);
  */
 void read_sampleswav(void* audiobuf);
 
-/**
- * @brief Gets the the position within the file
- * 
- * @return The the position within the file
- */
-int get_fposwav(void);
-
 void exitwav(void);
+
+void seekwav(int percentage);
 
 /**
  * @brief Gets the size of the buffer for wav files
@@ -62,4 +59,4 @@ int process_headerwav(void);
  *
  * @param wavfile Pointer to the .wav file
  */
-int init_audiowav(FILE* wavfile);
+int init_audiowav(const char* filename);

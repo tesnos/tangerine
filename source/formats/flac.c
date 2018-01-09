@@ -9,10 +9,17 @@ drflac* pFlac;
 
 //"fLaC"
 int flac_magic0 = 0x664c6143;
+long int flacprogress;
+bool flacdone = false;
 
 int get_samplerateflac()
 {
 	return pFlac->sampleRate;
+}
+
+int get_progressflac()
+{
+	return ((flacprogress * 100) / pFlac->totalSampleCount);
 }
 
 int get_channelsflac()
@@ -22,19 +29,26 @@ int get_channelsflac()
 
 void read_samplesflac(void* audiobuf)
 {
-	drflac_read_s16(pFlac, FLACBUFSIZE, audiobuf);
-}
-
-int get_fposflac()
-{
-	//return ftell(audiofile);
-	return 0;
+	if (flacdone) { return; }
+	
+	flacprogress += drflac_read_s16(pFlac, FLACBUFSIZE * pFlac->channels, audiobuf);
+	
+	if (flacprogress >= pFlac->totalSampleCount)
+	{
+		flacdone = true;
+	}
 }
 
 void exitflac()
 {
 	drflac_close(pFlac);
 	pFlac = NULL;
+}
+
+void seekflac(int percentage)
+{
+	drflac_seek_to_sample(pFlac, (int) (pFlac->totalSampleCount * (percentage / 100.0)));
+	flacprogress = (int) (pFlac->totalSampleCount * (percentage / 100.0));
 }
 
 int get_bufsizeflac()
@@ -74,6 +88,9 @@ int process_headerflac()
 
 int init_audioflac(const char* filename)
 {
+	flacprogress = 0;
+	flacdone = false;
+	
 	pFlac = drflac_open_file(filename);
 	if (pFlac == NULL) {
 		return FLACERR_DF_FAIL;

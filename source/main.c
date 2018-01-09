@@ -50,13 +50,19 @@ int main()
 	u32 kprevDown = 0;
 	u32 kprevUp = 0;
 	
-	int buffersfilled = 0;
+	touchPosition touch;
+	int touchx;
+	int touchy;
+	int touchdelay = 0;
+	
+	int audioprogress;
 	
 	int dirsize = getdirsize();
 	char* direntries[dirsize];
-	int dirpos = 0;
+	int dirpos = dirsize;
 	gui_init(direntries, &dirpos);
-	buildentries(direntries, dirsize);
+	dirpos = 0;
+	buildentries(direntries, getalldirsize());
 	
 	int appstate = 0;
 	
@@ -65,6 +71,12 @@ int main()
 	{
 		//Scan input and put all keys down/up into kDown/kUp
 		hidScanInput();
+		
+		//Read the touch screen coordinates
+		hidTouchRead(&touch);
+		touchx = touch.px;
+		touchy = touch.py;
+		
 		kprevDown = kDown;
 		kprevUp = kUp;
 		kDown = hidKeysDown();
@@ -84,11 +96,23 @@ int main()
 		
 		gui_draw_frame(appstate);
 		
-		buffersfilled = play_audio();
+		if (appstate == 1)
+		{
+			audioprogress = play_audio();
+			if (audioprogress == 100)
+			{
+				ceaseplayback();
+				if (*playing)
+				{
+					toggle_playback();
+				}
+				appstate = 0;
+			}
+			gui_printi(0, 0, col_black, audioprogress);
+			gui_draw_progress(audioprogress);
+		}
 		
 		gui_draw_play(*playing);
-		
-		//gui_printi(0, 120, col_black, buffersfilled);
 		
 		//Finish drawing graphics
 		gui_finish_frame();
@@ -124,21 +148,62 @@ int main()
 					dirpos--;
 				}
 			}
+			
+			if ((kDown & KEY_TOUCH) && (touchdelay == 0))
+			{
+				if ((touchx > 140 && touchx < 180) && (touchy > 195 && touchy < 240))
+				{
+					char fileloc[256] = "";
+					strcat(fileloc, getcurdir());
+					strcat(fileloc, "/");
+					strcat(fileloc, direntries[dirpos]);
+					int beginplay = playfile(fileloc);
+					appstate = 1;
+					if (beginplay > 0)
+					{
+						errexit(beginplay);
+					}
+					touchdelay = 20;
+				}
+			}
 		}
 		else if (appstate == 1)
 		{
 			//Playback controls
-			if (kDown & KEY_A){
+			if (kDown & KEY_A)
+			{
 				toggle_playback();
 			}
 			
-			if (kDown & KEY_B){
+			if (kDown & KEY_B)
+			{
 				appstate = 0;
+				ceaseplayback();
 				if (*playing)
 				{
 					toggle_playback();
 				}
 			}
+			
+			if ((kDown & KEY_TOUCH) && (touchdelay == 0))
+			{
+				if ((touchx > 140 && touchx < 180) && (touchy > 195 && touchy < 240))
+				{
+					toggle_playback();
+					touchdelay = 20;
+				}
+				
+				if ((touchx > 40 && touchx < 280) && (touchy > 155 && touchy < 170))
+				{
+					seekaudio(((touchx - 41) / 238.0) * 100);
+					touchdelay = 15;
+				}
+			}
+		}
+		
+		if (touchdelay > 0)
+		{
+			touchdelay--;
 		}
 	}
 	
