@@ -1,10 +1,10 @@
 <img src="https://github.com/tesnos/tangerine/raw/master/meta/logo.png" alt="tangerine logo">
 
 # tangerine
-#### A work-in-progress replacement for the 3DS's music player
+### A work-in-progress replacement for the 3DS's music player
 
 
-### Overview:
+## Overview:
 - Support for multiple formats (wav, flac, and mp3 currently)
 - Skip forward and back a song using the L and R buttons
 - Use the progress bar on the touch screen to scrub through the audio (SLOW)
@@ -12,7 +12,7 @@
 - *Touchscreen* controls (yay?)
 
 
-### Planned Features:
+## Planned Features:
 - [ ] Update internal documentation
 - [ ] Actual file browsing
 - [ ] Support for more formats
@@ -22,7 +22,7 @@
 - [ ] Themes maybe?
 + anything else the 3DS's sound application does
 
-### Building
+## Building
 Make sure you have the latest releases of [ctrulib](https://github.com/smealum/ctrulib/releases) and [citro3d](https://github.com/fincs/citro3d/releases) installed.  Also install libmpg123 for devkitARM via
 [deltabeard's tutorial](https://github.com/deltabeard/3ds_portlibs), then just type
 ```
@@ -30,7 +30,7 @@ make
 ```
 
 
-### Known Issues:
+## Known Issues:
 - Some flac files have issues
 - Scrubbing within wav files can cause odd behavior with the progress of the file
 - Scrubbing within flac files may take several seconds depending on the size of the file
@@ -39,7 +39,7 @@ WARNING: This was my first time ever writing C. There are going to be bugs and 9
 
 
 
-### Credits:
+## Credits:
 Thanks to
 - @smealum for [ctrulib](https://github.com/smealum/ctrulib)
 - @fincs for [citro3d](https://github.com/fincs/citro3d)
@@ -55,5 +55,5 @@ Thanks to
 
 
 
-### Licensing Information:
+## Licensing Information:
 See LICENSE.md
