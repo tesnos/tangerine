@@ -24,7 +24,7 @@
 + anything else the 3DS's sound application does
 
 ## Building
-Make sure you have the latest releases of [ctrulib](https://github.com/smealum/ctrulib/releases) and [citro3d](https://github.com/fincs/citro3d/releases) installed.  Then download the above linked in commit of [buildtools](https://github.com/Steveice10/buildtools/tree/adf5fa3e8382a0a3847ec3f7dcff781417c8751c) into the preexisting "buildtools" folder.  Also install libmpg123 for devkitARM via
+Make sure you have the latest releases of [ctrulib](https://github.com/smealum/ctrulib/releases) and [citro3d](https://github.com/fincs/citro3d/releases) installed.  Also install libmpg123 for devkitARM via
 [deltabeard's tutorial](https://github.com/deltabeard/3ds_portlibs), then just type
 ```
 make
@@ -45,7 +45,7 @@ Thanks to
 - @smealum for [ctrulib](https://github.com/smealum/ctrulib)
 - @fincs for [citro3d](https://github.com/fincs/citro3d)
 - @Steveice10 for [buildtools](https://github.com/Steveice10/buildtools)
-- @BernardoGiordano for [pp2d](https://github.com/BernardoGiordano/Checkpoint/tree/master/source/pp2d)
+- @BernardoGiordano for [pp2d](https://github.com/BernardoGiordano/Checkpoint/tree/master/source/pp2d) and help with Makefile/rsf files
 - [VLC for android](https://www.videolan.org/vlc/download-android.html) for the rough UI design concept
 - @Fenrir#3268, @ahoischen#9453, and @TurtleP#2954 (and anyone else!) in #dev in the Nintendo Homebrew discord for help with my beginner C mistakes
 - [mackron](https://mackron.github.io/) for their [doctor libs](https://github.com/mackron/dr_libs) (dr_flac and dr_wav specifically)
