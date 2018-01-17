@@ -13,6 +13,8 @@ void cleanexit()
 	//Properly exit all previously initialized libraries/services
 	gui_exit();
 	hidExit();
+	romfsExit();
+	endread();
 }
 
 void errexit(int errcode)
@@ -37,12 +39,60 @@ void errexit(int errcode)
 	cleanexit();
 }
 
+void skip(char** direntries, int* dirpos, int dirsize)
+{
+	ceaseplayback();
+	
+	*dirpos += 1;
+	
+	if (*dirpos >= dirsize)
+	{
+		*dirpos = 0;
+	}
+	
+	char fileloc[256] = "";
+	strcat(fileloc, getcurdir());
+	strcat(fileloc, "/");
+	strcat(fileloc, direntries[*dirpos]);
+	int beginplay = playfile(fileloc);
+	
+	if (beginplay > 0)
+	{
+		errexit(beginplay);
+	}
+}
+
+void prev(char** direntries, int* dirpos, int dirsize)
+{
+	ceaseplayback();
+	
+	*dirpos -= 1;
+	
+	if (*dirpos < 0)
+	{
+		*dirpos = dirsize - 1;
+	}
+	
+	char fileloc[256] = "";
+	strcat(fileloc, getcurdir());
+	strcat(fileloc, "/");
+	strcat(fileloc, direntries[*dirpos]);
+	int beginplay = playfile(fileloc);
+	
+	if (beginplay > 0)
+	{
+		errexit(beginplay);
+	}
+}
+
 int main()
 {
 	//Initialize the hid (human interface device (controls)), player (handles audio), and pp2d (graphics)
 	hidInit();
 	bool* playing = playerInit();
+	romfsInit();
 	files_init();
+	aptSetSleepAllowed(false);
 	
 	//Holds which keys are down/up
 	u32 kDown = 0;
@@ -108,7 +158,7 @@ int main()
 				}
 				appstate = 0;
 			}
-			gui_printi(0, 0, col_black, audioprogress);
+			//gui_printi(0, 0, col_black, audioprogress);
 			gui_draw_progress(audioprogress);
 		}
 		
@@ -180,6 +230,24 @@ int main()
 				appstate = 0;
 				ceaseplayback();
 				if (*playing)
+				{
+					toggle_playback();
+				}
+			}
+			
+			if (kDown & KEY_L)
+			{
+				prev(direntries, &dirpos, dirsize);
+				if (!*playing)
+				{
+					toggle_playback();
+				}
+			}
+			
+			if (kDown & KEY_R)
+			{
+				skip(direntries, &dirpos, dirsize);
+				if (!*playing)
 				{
 					toggle_playback();
 				}

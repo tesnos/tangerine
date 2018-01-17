@@ -58,6 +58,9 @@ void exitplayer()
 	//Close the file object
 	fclose(afile);
 	
+	//Stop playing
+	ceaseplayback();
+	
 	//Stop using the DSP
 	ndspExit();
 }

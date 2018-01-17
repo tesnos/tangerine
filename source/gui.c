@@ -26,8 +26,8 @@ void gui_init(char** entrytableptr, int* dirposptrinput)
 	pp2d_set_screen_color(GFX_TOP, clear_color_top);
 	pp2d_set_screen_color(GFX_BOTTOM, clear_color_bot);
 	
-	pp2d_load_texture_png(0, "orangetest.png");
-	pp2d_load_texture_png(1, "play.png");
+	pp2d_load_texture_png(0, "romfs:/orangetest.png");
+	pp2d_load_texture_png(1, "romfs:/play.png");
 	
 	pp2d_set_3D(1);
 }
@@ -47,7 +47,7 @@ void gui_draw_play(bool playing)
 
 void gui_draw_progress(int percent)
 {
-	pp2d_draw_rectangle(41, 161, (int) (238 * (percent / 100.0)), 5, col_orange);
+	pp2d_draw_rectangle(41, 161, (int) (238 * (percent / 100.0)), 5, col_base);
 }
 
 void gui_prepare_frame(gfxScreen_t target, gfx3dSide_t side)
@@ -113,7 +113,7 @@ void gui_draw_frame(int state)
 			pp2d_draw_texture(0, 112, 32);
 			
 			//Upper bar
-			pp2d_draw_rectangle(0, 0, 400, 24, col_orange);
+			pp2d_draw_rectangle(0, 0, 400, 24, col_base);
 		}
 		
 		if (state == 0)
@@ -122,7 +122,7 @@ void gui_draw_frame(int state)
 			pp2d_draw_texture(0, 112, 32);
 			
 			//Upper bar
-			pp2d_draw_rectangle(0, 0, 400, 24, col_orange);
+			pp2d_draw_rectangle(0, 0, 400, 24, col_base);
 		}
 	}
 	else if (targetscreen == GFX_BOTTOM)
@@ -130,19 +130,27 @@ void gui_draw_frame(int state)
 		if (state == 1)
 		{
 			//Lower bar
-			pp2d_draw_rectangle(0, 192, 320, 48, col_orange);
+			pp2d_draw_rectangle(0, 192, 320, 48, col_base);
 			
 			//Progress bar
 			pp2d_draw_rectangle(40, 160, 240, 7, col_lightgrey);
+			
+			//Next
+			pp2d_draw_texture_scale(1, 232, 195, 0.4f, 0.4f);
+			pp2d_draw_rectangle(266, 195, 10, 40, col_white);
+			
+			//Previous
+			pp2d_texture_select(1, 54, 195);
+			pp2d_texture_flip(HORIZONTAL);
+			pp2d_texture_scale(0.4f, 0.4f);
+			pp2d_texture_draw();
+			pp2d_draw_rectangle(44, 195, 10, 40, col_white);
 		}
 		
 		if (state == 0)
 		{
-			//Fast Forward
-			//pp2d_draw_texture_scale(1, 145, 195, 0.4f, 0.4f);
-			
 			//Lower bar
-			pp2d_draw_rectangle(0, 192, 320, 48, col_orange);
+			pp2d_draw_rectangle(0, 192, 320, 48, col_base);
 			
 			//File selection indicator
 			pp2d_draw_rectangle(0, 20, 320, 20, col_lightgrey);

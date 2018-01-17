@@ -1,6 +1,7 @@
 #include <3ds.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #include "pp2d/pp2d.h"
 
@@ -16,6 +17,7 @@
 
 //#define col_purple = RGBA8(0xFF, 0x00, 0xFF, 0xFF)
 //#define col_cyan = RGBA8(0x00, 0xFF, 0xFF, 0xFF)
+#define col_base RGBA8(0x29, 0x71, 0xEE, 0xFF)
 #define col_orange RGBA8(0xFF, 0xA5, 0x00, 0xFF)
 #define col_yellow RGBA8(0xFF, 0xFF, 0x00, 0xFF)
 
