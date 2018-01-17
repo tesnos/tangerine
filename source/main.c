@@ -97,8 +97,6 @@ int main()
 	//Holds which keys are down/up
 	u32 kDown = 0;
 	u32 kUp = 0;
-	u32 kprevDown = 0;
-	u32 kprevUp = 0;
 	
 	touchPosition touch;
 	int touchx;
