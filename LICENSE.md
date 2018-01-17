@@ -1,6 +1,10 @@
 "HeartBleed Synth" by Erokia (https://freesound.org/people/Erokia/sounds/414770/) is licensed under:
+
 https://creativecommons.org/licenses/by/3.0/
+
 Modifications were made to it in order to fit it into a timespace less than 3 seconds
+
+
 
 
 pp2d is liscensed under the:
@@ -28,7 +32,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
+
+
 tangerine is licensed under the:
+
 
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
