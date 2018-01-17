@@ -8,6 +8,7 @@ int tolddir = 0;
 
 void files_init()
 {
+	mkdir("/music", 777);
 	startread(curdir);
 }
 

@@ -349,11 +349,11 @@ Result pp2d_init(void)
 	
 	pp2d_set_texture_filter(GPU_NEAREST, GPU_NEAREST);
 
-//#ifdef BUILDTOOLS
+#ifdef BUILDTOOLS
 	vshader_dvlb = DVLB_ParseFile((u32*)vshader_shbin, vshader_shbin_len);
-//#else
-//	vshader_dvlb = DVLB_ParseFile((u32*)vshader_shbin, vshader_shbin_size);
-//#endif
+#else
+	vshader_dvlb = DVLB_ParseFile((u32*)vshader_shbin, vshader_shbin_size);
+#endif
 
 	shaderProgramInit(&program);
 	shaderProgramSetVsh(&program, &vshader_dvlb->DVLE[0]);
