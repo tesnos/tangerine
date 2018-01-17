@@ -31,7 +31,7 @@ make
 
 
 ## Known Issues:
-- Some flac files have issues
+- Some flac files have issues with playback speed
 - Scrubbing within wav files can cause odd behavior with the progress of the file
 - Scrubbing within flac files may take several seconds depending on the size of the file
 
