@@ -1,4 +1,4 @@
-![logo](https://github.com/tesnos/tangerine/raw/master/meta/logo.png)
+<img src="https://github.com/tesnos/tangerine/raw/master/meta/logo.png" alt="tangerine logo">
 
 #tangerine
 ##A work-in-progress replacement for the 3DS's music player
