@@ -155,7 +155,14 @@ void gui_draw_frame(int state)
 			//File selection indicator
 			pp2d_draw_rectangle(0, 20, 320, 20, col_lightgrey);
 			
-			gui_printc(0, 20, col_black, entrytable[*dirposptr]);
+			if (entrytablelen == 0) {
+				gui_printc(0, 20, col_black, "No music found.");
+			}
+			else
+			{
+				gui_printc(0, 20, col_black, entrytable[*dirposptr]);
+			}
+			
 			if (*dirposptr < entrytablelen - 1)
 			{
 				gui_printc(20, 40, col_black, entrytable[*dirposptr + 1]);

@@ -164,7 +164,7 @@ int main()
 		if (appstate == 0)
 		{
 			//Selector
-			if (kDown & KEY_A)
+			if ((kDown & KEY_A) && (dirsize > 0))
 			{
 				char fileloc[256] = "";
 				strcat(fileloc, getcurdir());
@@ -195,7 +195,7 @@ int main()
 			
 			if ((kDown & KEY_TOUCH) && (touchdelay == 0))
 			{
-				if ((touchx > 140 && touchx < 180) && (touchy > 195 && touchy < 240))
+				if ((touchx > 140 && touchx < 180) && (touchy > 195 && touchy < 240) && (dirsize > 0))
 				{
 					char fileloc[256] = "";
 					strcat(fileloc, getcurdir());
