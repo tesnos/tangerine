@@ -96,7 +96,6 @@ int main()
 	
 	//Holds which keys are down/up
 	u32 kDown = 0;
-	u32 kUp = 0;
 	
 	touchPosition touch;
 	int touchx;
@@ -125,10 +124,7 @@ int main()
 		touchx = touch.px;
 		touchy = touch.py;
 		
-		kprevDown = kDown;
-		kprevUp = kUp;
 		kDown = hidKeysDown();
-		kUp = hidKeysUp();
 		
 		//If the start key is pressed, exit to the hbmenu
 		if (kDown & KEY_START){
