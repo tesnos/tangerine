@@ -5,6 +5,7 @@
 
 
 ## Overview:
+- Put all music in "/music" folder on your SD card as file browsing is not currently supported yet
 - Support for multiple formats (wav, flac, and mp3 currently)
 - Skip forward and back a song using the L and R buttons
 - Use the progress bar on the touch screen to scrub through the audio (SLOW)
@@ -23,7 +24,7 @@
 + anything else the 3DS's sound application does
 
 ## Building
-Make sure you have the latest releases of [ctrulib](https://github.com/smealum/ctrulib/releases) and [citro3d](https://github.com/fincs/citro3d/releases) installed.  Also install libmpg123 for devkitARM via
+Make sure you have the latest releases of [ctrulib](https://github.com/smealum/ctrulib/releases) and [citro3d](https://github.com/fincs/citro3d/releases) installed.  Then download the above linked in commit of [buildtools](https://github.com/Steveice10/buildtools/tree/adf5fa3e8382a0a3847ec3f7dcff781417c8751c) into the preexisting "buildtools" folder.  Also install libmpg123 for devkitARM via
 [deltabeard's tutorial](https://github.com/deltabeard/3ds_portlibs), then just type
 ```
 make
