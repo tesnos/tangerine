@@ -27,8 +27,13 @@
 Make sure you have the latest releases of [ctrulib](https://github.com/smealum/ctrulib/releases) and [citro3d](https://github.com/fincs/citro3d/releases) installed.  Also install libmpg123 for devkitARM via
 [deltabeard's tutorial](https://github.com/deltabeard/3ds_portlibs), then just type
 ```
-make
+make 3dsx
 ```
+to get a .3dsx and .smdh, or
+```
+make cia
+```
+to get a cia
 
 
 ## Known Issues:
