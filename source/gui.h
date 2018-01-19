@@ -28,7 +28,7 @@ void gui_init(char** entrytableptr, int* dirposptrinput);
 
 void gui_draw_play(bool playing);
 
-void gui_draw_progress(int percent);
+void gui_draw_progress(float percent);
 
 /**
  * @brief Prepares to begin drawing to screen target, on side

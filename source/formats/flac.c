@@ -19,7 +19,7 @@ int get_samplerateflac()
 
 int get_progressflac()
 {
-	return ((flacprogress * 100) / pFlac->totalSampleCount);
+	return (flacprogress / (pFlac->totalSampleCount / 100));
 }
 
 int get_channelsflac()

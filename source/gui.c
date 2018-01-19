@@ -45,9 +45,9 @@ void gui_draw_play(bool playing)
 	}
 }
 
-void gui_draw_progress(int percent)
+void gui_draw_progress(float percent)
 {
-	pp2d_draw_rectangle(41, 161, (int) (238 * (percent / 100.0)), 5, col_base);
+	pp2d_draw_rectangle(41, 161, (int) (238 * (percent / 100)), 5, col_base);
 }
 
 void gui_prepare_frame(gfxScreen_t target, gfx3dSide_t side)

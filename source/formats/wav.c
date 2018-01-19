@@ -12,7 +12,7 @@ int get_sampleratewav()
 
 int get_progresswav()
 {
-	return ((wavprogress * 100) / pWav->totalSampleCount);
+	return (wavprogress / (pWav->totalSampleCount / 100));
 }
 
 int get_channelswav()

@@ -14,7 +14,7 @@ int get_sampleratemp3()
 
 int get_progressmp3()
 {
-	return ((mpg123_tell(mpg) * 100) / mpg123_length(mpg));
+	return (mpg123_tell(mpg) / (mpg123_length(mpg) / 100));
 }
 
 int get_channelsmp3()
