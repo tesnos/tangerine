@@ -37,9 +37,8 @@ to get a cia
 
 
 ## Known Issues:
-- Some flac files have issues with playback speed
-- Scrubbing within wav files can cause odd behavior with the progress of the file
-- Scrubbing within flac files may take several seconds depending on the size of the file
+- Some flac files have issues with playback speed on hardware but work fine in Citra
+- Scrubbing within flac/mp3 files may take several seconds on Old 3DS depending on the size of the file
 
 WARNING: This was my first time ever writing C. There are going to be bugs and 90% percent of this is probably terrible code, so don't hesitate to report anything because I probably wouldn't have found it otherwise.
 
