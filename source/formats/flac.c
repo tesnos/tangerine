@@ -31,7 +31,7 @@ void read_samplesflac(void* audiobuf)
 {
 	if (flacdone) { return; }
 	
-	flacprogress += drflac_read_s16(pFlac, FLACBUFSIZE * pFlac->channels, audiobuf);
+	flacprogress += drflac_read_s16(pFlac, FLACBUFSIZE, audiobuf);
 	
 	if (flacprogress >= pFlac->totalSampleCount)
 	{
