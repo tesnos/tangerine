@@ -7,10 +7,10 @@
 //Errors that may be returned by process_header
 typedef enum
 {
-	WAVERR_NONE = 0,
-	WAVERR_DW_FAIL = 1,
-	WAVERR_EXTRA_CHANNELS = 2,
-	WAVERR_MULTIPLE = 3
+	WAVERR_NONE = 0x0,
+	WAVERR_DW_FAIL = 0x21,
+	WAVERR_EXTRA_CHANNELS = 0x22,
+	WAVERR_MULTIPLE = 0x23
 } WAV_Errors;
 
 /**

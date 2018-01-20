@@ -31,7 +31,8 @@ void errexit(int errcode)
 	
 		gui_prepare_frame(GFX_TOP, GFX_LEFT);
 		
-		gui_printi(20, 20, col_black, errcode);
+		gui_printc(20, 20, col_err, "Error: ");
+		gui_printi(60, 20, col_err, errcode);
 		
 		gui_finish_frame();
 	}

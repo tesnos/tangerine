@@ -6,11 +6,11 @@
 //Errors that may be returned by process_header
 typedef enum
 {
-	FLACERR_NONE = 0,
-	FLACERR_WRONG_MAGIC = 1,
-	FLACERR_DF_FAIL = 2,
-	FLACERR_EXTRA_CHANNELS = 3,
-	FLACERR_MULTIPLE = 4
+	FLACERR_NONE = 0x0,
+	FLACERR_WRONG_MAGIC = 0x31,
+	FLACERR_DF_FAIL = 0x32,
+	FLACERR_EXTRA_CHANNELS = 0x33,
+	FLACERR_MULTIPLE = 0x34
 } FLAC_Errors;
 
 /**

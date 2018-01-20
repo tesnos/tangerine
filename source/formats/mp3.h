@@ -7,9 +7,9 @@
 //Errors that may be returned by process_header
 typedef enum
 {
-	MP3ERR_NONE = 0,
-	MP3ERR_EXTRA_CHANNELS = 1,
-	MP3ERR_MULTIPLE = 2
+	MP3ERR_NONE = 0x0,
+	MP3ERR_EXTRA_CHANNELS = 0x41,
+	MP3ERR_MULTIPLE = 0x42
 } MP3_Errors;
 
 /**

@@ -224,7 +224,7 @@ int playfile(const char* filename)
 	}
 	if (format == FORMAT_NONE)
 	{
-		return 50;
+		return 0x10;
 	}
 	
 	if (numchannels == 2)
