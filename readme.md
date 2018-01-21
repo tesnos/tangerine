@@ -51,6 +51,7 @@ Thanks to
 - @Steveice10 for [buildtools](https://github.com/Steveice10/buildtools)
 - @BernardoGiordano for [pp2d](https://github.com/BernardoGiordano/Checkpoint/tree/master/source/pp2d) and help with Makefile/rsf files
 - [VLC for android](https://www.videolan.org/vlc/download-android.html) for the rough UI design concept
+- @Sergey#5402 for help testing
 - @Fenrir#3268, @ahoischen#9453, and @TurtleP#2954 (and anyone else!) in #dev in the Nintendo Homebrew discord for help with my beginner C mistakes
 - [mackron](https://mackron.github.io/) for their [doctor libs](https://github.com/mackron/dr_libs) (dr_flac and dr_wav specifically)
 - devkitPro for the example Makefile
