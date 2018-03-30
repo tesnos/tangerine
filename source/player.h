@@ -17,22 +17,27 @@ typedef enum
 } Formats;
 
 /**
- * @brief Fills audioBuffer with size of audio data and flushes it to the DSP
+ * @brief Fills audioBuffer with size bytes of audio data and flushes it to the DSP
+ * 
+ * @param audioBuffer Pointer to the buffer for fill
+ * @param size Size, in bytes of the buffer to fill
  */
 void fill_buffer(void* audioBuffer, size_t size);
 
 /**
- * @brief Frees the memory held in the audiobuffers if there is any
+ * @brief Frees the memory held in the audio buffers if there is any
  */
 void free_buffers(void);
 
 /**
- * @brief Called when audio is done playing are there are not plans to play anymore, closes everything
+ * @brief Closes everything, called when the application is closing
  */
 void exitplayer(void);
 
 /**
- * @brief Figures out what format the audio inside unknownfile is in based on the first magic
+ * @brief Figures out what format the audio inside unknownfile is in based on the file's magic
+ * 
+ * @param unknownfile Pointer to the file that needs to analyzed
  * 
  * @return One of Formats
  */
@@ -40,31 +45,48 @@ int recognize(FILE* unknownfile);
 
 /**
  * @brief Initializes all the necessary things to prepare for audio playback
+ * 
+ * @return Pointer to the boolean that keeps track of whether the audio is currently playing
  */
 bool* playerInit(void);
 
+/**
+ * @brief Stops playback of the current audio file so another can be played or the application can be closed
+ */
 void ceaseplayback(void);
 
+/**
+ * @brief Sets the progress of the currently playing audio to percentage
+ * 
+ * @param percentage A percentage of the audio to jump to, 0-100
+ */
 void seekaudio(int percentage);
 
 /**
- * @brief Starts to play audio.wav
+ * @brief Loads an audio file at the path of filename, and configures the DSP to begin playback of it
  * 
- * @return Success or failure code
+ * @param filename Path to where the file is located
+ * 
+ * @return 0 for success or failure code (0x10 is not an audio file, anything else if from the individual format)
  */
 int playfile(const char* filename);
 
+/**
+ * @brief Gets how far into the audio the player is
+ * 
+ * @return A percentage of the audio played, 0-100
+ */
 int get_progress(void);
 
 /**
- * @brief Call this in the main loop of the program, checks if buffers are done and returns which ones are refilled
+ * @brief Call this in the main loop of the program, keeps audio data fresh and returns playback progress
  * 
- * @return The buffers that are refilled, coded as follows: 0 = none, 1 = buffer 1, 2 = buffer 0, 3 = both 
+ * @return The progress of the audio played, a percentage 0-100
  */
 int play_audio(void);
 
 
 /**
- * @brief If audio is playing, pause it. If audio is pause, resume it.
+ * @brief If audio is playing, pause it. If audio is paused, resume it.
  */
 void toggle_playback(void);

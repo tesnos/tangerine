@@ -14,49 +14,64 @@ typedef enum
 } FLAC_Errors;
 
 /**
- * @brief Gets the sample rate of the music
+ * @brief Gets the sample rate of the audio
  * 
- * @return The sample rate of the music
+ * @return The sample rate of the audio
  */
 int get_samplerateflac(void);
 
+/**
+ * @brief Gets how far into the audio the program is
+ * 
+ * @return A percentage of the audio played, 0-100
+ */
 int get_progressflac(void);
 
 /**
- * @brief Gets the number of channels of the music
+ * @brief Gets the number of channels of the audio
  * 
- * @return The number of channels of the music
+ * @return The number of channels of the audio
  */
 int get_channelsflac(void);
 
 /**
- * @brief Reads FLACBUFSIZE * numchannels bytes of data from the file into audiobuf
+ * @brief Reads FLACBUFSIZE bytes of data from the audio file into audiobuf
  * 
- * @param audiobuf Buffer to read data into
+ * @param audiobuf Pointer to a buffer to read audio data into
  */
 void read_samplesflac(void* audiobuf);
 
+/**
+ * @brief Closes out the currently playing audio file
+ */
 void exitflac(void);
 
+/**
+ * @brief Sets the current position of the audio playing to the point at percentage
+ * 
+ * @param percentage A position in percentage to continue playback at, 0-100
+ */
 void seekflac(int percentage);
 
 /**
- * @brief Gets the size of the buffer for flac files
+ * @brief Gets the size of the buffer for flac audio files
  * 
- * @return The size of the buffer for flac files
+ * @return The size of the buffer for flac audio files
  */
 int get_bufsizeflac(void);
 
 /**
- * @brief Verifies that a file is a proper flac file and extracts the information
+ * @brief Verifies that a file is a proper flac audio file
  * 
  * @return One of FLAC_Errors
  */
 int process_headerflac(void);
 
 /**
- * @brief Initializes flac playback from a flac file, extracting the information and verifying the file to be a flac file
+ * @brief Initializes audio playback from a audio file, verifying the file first
  *
- * @param filename Name of the file to play
+ * @param filename Path to the audio file
+ * 
+ * @return One of FLAC_Errors
  */
 int init_audioflac(const char* filename);

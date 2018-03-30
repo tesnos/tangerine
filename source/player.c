@@ -4,8 +4,8 @@
 int format = FORMAT_NONE;
 
 //Buffers to hold audio data
-int16_t* audioBuffer0 = 0;
-int16_t* audioBuffer1 = 0;
+int16_t* audioBuffer0 = NULL;
+int16_t* audioBuffer1 = NULL;
 
 //Audio file pointer
 FILE* afile;
@@ -41,12 +41,12 @@ void fill_buffer(void* audioBuffer, size_t size)
 
 void free_buffers()
 {
-	if (audioBuffer0 == 0 && audioBuffer1 == 0)
+	if (audioBuffer0 != NULL && audioBuffer1 != NULL)
 	{
 		linearFree(audioBuffer0);
 		linearFree(audioBuffer1);
-		audioBuffer0 = 0;
-		audioBuffer1 = 0;
+		audioBuffer0 = NULL;
+		audioBuffer1 = NULL;
 	}
 }
 
@@ -173,7 +173,7 @@ int playfile(const char* filename)
 	//clear
 	ndspChnWaveBufClear(0);
 	
-	int success;
+	int success = 0x0;
 	
 	//Open the audio file
 	afile = fopen(filename, "rb");

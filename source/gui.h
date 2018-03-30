@@ -23,15 +23,28 @@
 
 /**
  * @brief Gets everything prepared to use the gui
+ * 
+ * @param entrytableptr Pointer to table of all of the directory's file names
+ * @param dirposptrinput Pointer to integer that keeps track of where the user is in the directory
  */
 void gui_init(char** entrytableptr, int* dirposptrinput);
 
+/**
+ * @brief Draws the play or pause button depending on whether audio is currently playing
+ * 
+ * @param playing Whether the audio is currently playing or not
+ */
 void gui_draw_play(bool playing);
 
+/**
+ * @brief Draws the audio progress bar to the screen, percent complete
+ *
+ * @param percent Audio progress as a percentage, 0-100
+ */
 void gui_draw_progress(float percent);
 
 /**
- * @brief Prepares to begin drawing to screen target, on side
+ * @brief Prepares to begin drawing a frame to screen target, on side
  * 
  * @param target Which screen to draw on, GFX_TOP or GFX_BOTTOM
  * @param side Which 3d side to draw on, GFX_LEFT or GFX_RIGHT
@@ -39,7 +52,7 @@ void gui_draw_progress(float percent);
 void gui_prepare_frame(gfxScreen_t target, gfx3dSide_t side);
 
 /**
- * @brief Convert any value to a char array and draw it to a specified point w/ a specified color
+ * @brief Converts value to a char array and prints it at a specified point with a specified color
  * 
  * @param x X position for printing
  * @param y Y position for printing
@@ -49,7 +62,7 @@ void gui_prepare_frame(gfxScreen_t target, gfx3dSide_t side);
 void gui_printi(float x, float y, u32 color, int value);
 
 /**
- * @brief Convert any value to a char array and draw it to a specified point w/ a specified color
+ * @brief Prints value at a specified point with a specified color
  * 
  * @param x X position for printing
  * @param y Y position for printing
@@ -59,14 +72,14 @@ void gui_printi(float x, float y, u32 color, int value);
 void gui_printc(float x, float y, u32 color, char* value);
 
 /**
- * @brief Draw a frame that corresponds to the current application state
+ * @brief Draw a frame that corresponds to the current application state and which screen is being drawn to
  * 
  * @param state One of the application states, tells what frame to draw
  */
 void gui_draw_frame(int state);
 
 /**
- * @brief Finish drawing to the screen for the current frame
+ * @brief Finish drawing to the screen for the current frame, only call after ALL drawing is done
  */
 void gui_finish_frame(void);
 

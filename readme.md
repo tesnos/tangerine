@@ -14,7 +14,7 @@
 
 
 ## Planned Features:
-- [ ] Update internal documentation
+- [x] Update internal documentation
 - [ ] Actual file browsing
 - [ ] Support for more formats
 - [ ] Ability to create and play playlists

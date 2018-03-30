@@ -112,14 +112,13 @@ int detectfiletype(char* filename)
 	return ftype;
 }
 
-//ctrulib stubs the real rewinddir, so ¯\_(ツ)_/¯
 void resetdir()
 {
 	endread();
 	startread(curdir);
 }
 
-int isdirectory(char* filepath)
+int isdirectory(char* path)
 {
 	struct stat path_stat;
     stat(filepath, &path_stat);

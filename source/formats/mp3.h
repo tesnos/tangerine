@@ -13,18 +13,23 @@ typedef enum
 } MP3_Errors;
 
 /**
- * @brief Gets the sample rate of the music
+ * @brief Gets the sample rate of the audio
  * 
- * @return The sample rate of the music
+ * @return The sample rate of the audio
  */
 int get_sampleratemp3(void);
 
+/**
+ * @brief Gets how far into the audio the program is
+ * 
+ * @return A percentage of the audio played, 0-100
+ */
 int get_progressmp3(void);
 
 /**
- * @brief Gets the number of channels of the music
+ * @brief Gets the number of channels of the audio
  * 
- * @return The number of channels of the music
+ * @return The number of channels of the audio
  */
 int get_channelsmp3(void);
 
@@ -36,33 +41,36 @@ int get_channelsmp3(void);
 void read_samplesmp3(void* audiobuf);
 
 /**
- * @brief Gets the the position within the file
- * 
- * @return The the position within the file
+ * @brief Closes out the currently playing audio file
  */
-int get_fposmp3(void);
-
 void exitmp3(void);
 
+/**
+ * @brief Sets the current position of the audio playing to the point at percentage
+ * 
+ * @param percentage A position in percentage to continue playback at, 0-100
+ */
 void seekmp3(int percentage);
 
 /**
- * @brief Gets the size of the buffer for mp3 files
+ * @brief Gets the size of the buffer for mp3 audio files
  * 
- * @return The size of the buffer for mp3 files
+ * @return The size of the buffer for mp3 audio files
  */
 int get_bufsizemp3(void);
 
 /**
- * @brief Verifies that a file is a proper mp3 file and extracts the information
+ * @brief Verifies that a file is a proper mp3 audio file
  * 
- * @return One of MP3_Errors
+ * @return One of MP3_Errors or an mpg123 error code
  */
 int process_headermp3(void);
 
 /**
- * @brief Initializes mp3 playback from a mp3 file, extracting the information and verifying the file to be a mp3 file
+ * @brief Initializes audio playback from a audio file, verifying the file first
  *
- * @param filename Name of the file to play
+ * @param filename Path to the audio file
+ * 
+ * @return One of MP3_Errors or an mpg123 error code
  */
 int init_audiomp3(const char* filename);

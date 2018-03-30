@@ -33,11 +33,6 @@ void read_samplesmp3(void* audiobuf)
 	}
 }
 
-int get_fposmp3()
-{
-	return 0;
-}
-
 void exitmp3()
 {
 	mpg123_close(mpg);
