@@ -14,7 +14,7 @@ typedef enum
 	FORMAT_WAV = 1,
 	FORMAT_FLAC = 2,
 	FORMAT_MP3 = 3
-} Formats;
+} Format;
 
 /**
  * @brief Fills audioBuffer with size bytes of audio data and flushes it to the DSP
@@ -32,14 +32,14 @@ void free_buffers(void);
 /**
  * @brief Closes everything, called when the application is closing
  */
-void exitplayer(void);
+void player_exit(void);
 
 /**
  * @brief Figures out what format the audio inside unknownfile is in based on the file's magic
  * 
  * @param unknownfile Pointer to the file that needs to analyzed
  * 
- * @return One of Formats
+ * @return A Format
  */
 int recognize(FILE* unknownfile);
 
@@ -48,7 +48,7 @@ int recognize(FILE* unknownfile);
  * 
  * @return Pointer to the boolean that keeps track of whether the audio is currently playing
  */
-bool* playerInit(void);
+bool* player_init(void);
 
 /**
  * @brief Stops playback of the current audio file so another can be played or the application can be closed
@@ -85,6 +85,7 @@ int get_progress(void);
  */
 int play_audio(void);
 
+bool* get_playing_handle();
 
 /**
  * @brief If audio is playing, pause it. If audio is paused, resume it.

@@ -11,7 +11,7 @@ typedef enum
 	FLACERR_DF_FAIL = 0x32,
 	FLACERR_EXTRA_CHANNELS = 0x33,
 	FLACERR_MULTIPLE = 0x34
-} FLAC_Errors;
+} FLACError;
 
 /**
  * @brief Gets the sample rate of the audio
@@ -63,7 +63,7 @@ int get_bufsizeflac(void);
 /**
  * @brief Verifies that a file is a proper flac audio file
  * 
- * @return One of FLAC_Errors
+ * @return A FLACError
  */
 int process_headerflac(void);
 
@@ -72,6 +72,6 @@ int process_headerflac(void);
  *
  * @param filename Path to the audio file
  * 
- * @return One of FLAC_Errors
+ * @return A FLACError
  */
 int init_audioflac(const char* filename);

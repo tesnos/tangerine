@@ -30,6 +30,13 @@
 void gui_init(char** entrytableptr, int* dirposptrinput);
 
 /**
+ * @brief Tells the gui how long the table that contains file names is so we don't draw garbage
+ * 
+ * @param length Size of table
+ */
+void gui_set_table_length(size_t length);
+
+/**
  * @brief Draws the play or pause button depending on whether audio is currently playing
  * 
  * @param playing Whether the audio is currently playing or not
@@ -42,6 +49,13 @@ void gui_draw_play(bool playing);
  * @param percent Audio progress as a percentage, 0-100
  */
 void gui_draw_progress(float percent);
+
+/**
+ * @brief Draws indicator to indicate how to switch to the other selection type
+ *
+ * @param selectiontype Type of selection currently occuring
+ */
+void gui_draw_selection(int selectiontype);
 
 /**
  * @brief Prepares to begin drawing a frame to screen target, on side
@@ -72,7 +86,7 @@ void gui_printi(float x, float y, u32 color, int value);
 void gui_printc(float x, float y, u32 color, char* value);
 
 /**
- * @brief Draw a frame that corresponds to the current application state and which screen is being drawn to
+ * @brief Draw the static elements of a frame that corresponds to the current application state and which screen is being drawn to
  * 
  * @param state One of the application states, tells what frame to draw
  */

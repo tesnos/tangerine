@@ -54,11 +54,13 @@ void endread(void);
 int recognizefiletype(FILE* unknownfile);
 
 /**
- * @brief Loops through the current directory, counting the total number of audio files
+ * @brief Loops through the current directory, counting the total number of audio/playlist files
  * 
- * @return The total number of audio files within the current directory
+ * @param type Type of files to count, audio or playlist. (reference SelectionType in main.c)
+ * 
+ * @return The total number of audio/playlist files within the current directory
  */
-int getdirsize(void);
+int getdirsize(int type);
 
 /**
  * @brief Loops through the current directory, counting the total number of audio files
@@ -72,7 +74,7 @@ int getalldirsize(void);
  * 
  * @param The name of a file which needs to have its format be determined
  * 
- * @return The file format (reference Formats in player.c for more detail)
+ * @return The file format (reference Formats in player.c)
  */
 int detectfiletype(char* filename);
 
@@ -95,5 +97,6 @@ int isdirectory(char* path);
  * 
  * @param entryarray Pointer to the array where the names should be placed
  * @param length Number of names to put in the array
+ * @param entrytypes Type of entries to put into the array (reference SelectionType in main.c)
  */
-void buildentries(char** entryarray, int length);
+void buildentries(char** entryarray, int length, int entrytypes);

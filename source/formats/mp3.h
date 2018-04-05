@@ -10,7 +10,7 @@ typedef enum
 	MP3ERR_NONE = 0x0,
 	MP3ERR_EXTRA_CHANNELS = 0x41,
 	MP3ERR_MULTIPLE = 0x42
-} MP3_Errors;
+} MP3Error;
 
 /**
  * @brief Gets the sample rate of the audio
@@ -62,7 +62,7 @@ int get_bufsizemp3(void);
 /**
  * @brief Verifies that a file is a proper mp3 audio file
  * 
- * @return One of MP3_Errors or an mpg123 error code
+ * @return A MP3Error or an mpg123 error code
  */
 int process_headermp3(void);
 
@@ -71,6 +71,6 @@ int process_headermp3(void);
  *
  * @param filename Path to the audio file
  * 
- * @return One of MP3_Errors or an mpg123 error code
+ * @return A MP3Error or an mpg123 error code
  */
 int init_audiomp3(const char* filename);

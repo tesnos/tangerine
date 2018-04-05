@@ -1,22 +1,41 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "gui.h"
-#include "player.h"
 #include "filemanage.h"
+#include "gui.h"
+//#include "player.h"
+#include "playlist.h"
 
+//The possible application states
+typedef enum
+{
+	STATE_SELECTION = 0,
+	STATE_PLAYING = 1
+} AppState;
+
+//Types of files to select
+typedef enum
+{
+	SELTYPE_AUDIO = 0,
+	SELTYPE_PLAYLIST = 1
+} SelectionType;
+
+
+//Exit normally and clean everything up
 void cleanexit()
 {
-	//Clean up in the player
-	exitplayer();
-	
-	//Properly exit all previously initialized libraries/services
+	//Clean up internally
+	playlist_exit();
 	gui_exit();
+	endread();
+	
+	//Properly exit previously initialized services
 	hidExit();
 	romfsExit();
-	endread();
 }
 
+
+//Exit for when an error is encountered
 void errexit(int errcode)
 {
 	u32 kDown;
@@ -40,6 +59,8 @@ void errexit(int errcode)
 	cleanexit();
 }
 
+
+//Skips to the next audio file
 void skip(char** direntries, int* dirpos, int dirsize)
 {
 	ceaseplayback();
@@ -55,7 +76,7 @@ void skip(char** direntries, int* dirpos, int dirsize)
 	strcat(fileloc, getcurdir());
 	strcat(fileloc, "/");
 	strcat(fileloc, direntries[*dirpos]);
-	int beginplay = playfile(fileloc);
+	int beginplay = playlist_play_file(fileloc);
 	
 	if (beginplay > 0)
 	{
@@ -63,6 +84,8 @@ void skip(char** direntries, int* dirpos, int dirsize)
 	}
 }
 
+
+//Skips to the previous audio file
 void prev(char** direntries, int* dirpos, int dirsize)
 {
 	ceaseplayback();
@@ -78,7 +101,7 @@ void prev(char** direntries, int* dirpos, int dirsize)
 	strcat(fileloc, getcurdir());
 	strcat(fileloc, "/");
 	strcat(fileloc, direntries[*dirpos]);
-	int beginplay = playfile(fileloc);
+	int beginplay = playlist_play_file(fileloc);
 	
 	if (beginplay > 0)
 	{
@@ -86,64 +109,66 @@ void prev(char** direntries, int* dirpos, int dirsize)
 	}
 }
 
+
 int main()
 {
-	//Initialize the hid (human interface device (controls)), player (handles audio), and pp2d (graphics)
+	//External initializations (libctru services)
 	hidInit();
-	bool* playing = playerInit();
 	romfsInit();
+	
+	//Internal initializations
 	files_init();
+	player_init();
+	playlist_init();
+	
+	//Don't stop when the 3DS is closed
 	aptSetSleepAllowed(false);
 	
-	//Holds which keys are down/up
-	u32 kDown = 0;
 	
+	//These keep track of the state of application
+	int appstate = STATE_SELECTION;
+	int selectiontype = SELTYPE_AUDIO;
+	bool* playing = get_playing_handle();
+	
+	//Holds which keys are down
+	u32 kDown = 0;
+	//For use with touch screen input
 	touchPosition touch;
 	int touchx;
 	int touchy;
 	int touchdelay = 0;
 	
-	int audioprogress;
 	
-	int dirsize = getdirsize();
+	//Get number of music files in directory
+	int dirsize = getdirsize(selectiontype);
 	char* direntries[dirsize];
-	int dirpos = dirsize;
+	//Create an int to hold where we are in the directory and give it and the pointer to our table
+	//to the gui + tell the gui how long the table is.
+	int dirpos = 0;
 	gui_init(direntries, &dirpos);
-	dirpos = 0;
-	buildentries(direntries, getalldirsize());
+	gui_set_table_length(dirsize);
+	//Fill up the entries table with the filenames
+	buildentries(direntries, getalldirsize(), selectiontype);
 	
-	int appstate = 0;
 	
 	//Main loop of program
 	while (aptMainLoop())
 	{
-		//Scan input and put all keys down/up into kDown/kUp
-		hidScanInput();
+		//-----------------------
+		//       GRAPHICS
+		//-----------------------
 		
-		//Read the touch screen coordinates
-		hidTouchRead(&touch);
-		touchx = touch.px;
-		touchy = touch.py;
-		
-		kDown = hidKeysDown();
-		
-		//If the start key is pressed, exit to the hbmenu
-		if (kDown & KEY_START){
-			break;
-		}
-		
-		//Start drawing this frame's graphics
+		//Draw the static elements of this frame's graphics
 		gui_prepare_frame(GFX_TOP, GFX_LEFT);
-		
 		gui_draw_frame(appstate);
 		
 		gui_prepare_frame(GFX_BOTTOM, GFX_LEFT);
-		
 		gui_draw_frame(appstate);
 		
-		if (appstate == 1)
+		//Keeps track of audio progress
+		if (appstate == STATE_PLAYING)
 		{
-			audioprogress = play_audio();
+			int audioprogress = play_audio();
 			if (audioprogress == 100)
 			{
 				ceaseplayback();
@@ -153,73 +178,108 @@ int main()
 				}
 				appstate = 0;
 			}
-			//gui_printi(0, 0, col_black, audioprogress);
 			gui_draw_progress(audioprogress);
 		}
 		
+		//Differences between audio and playlist selection
+		if (appstate == STATE_SELECTION)
+		{
+			gui_draw_selection(selectiontype);
+		}
+		
+		//Draw play/pause button
 		gui_draw_play(*playing);
 		
-		//Finish drawing graphics
+		//Stop drawing graphics for this frame
 		gui_finish_frame();
 		
-		if (appstate == 0)
+		
+		
+		//-----------------------
+		//    INPUT HANDLING
+		//-----------------------
+		
+		//Scan input
+		hidScanInput();
+		
+		//Read the touch screen coordinates
+		hidTouchRead(&touch);
+		touchx = touch.px;
+		touchy = touch.py;
+		
+		//Get what buttons are being pressed
+		kDown = hidKeysDown();
+		
+		//If the start key is pressed, exit to the hbmenu
+		if (kDown & KEY_START){
+			break;
+		}
+		
+		//Input handler if statements
+		//Handle audio file selection
+		if (appstate == STATE_SELECTION)
 		{
-			//Selector
-			if ((kDown & KEY_A) && (dirsize > 0))
+			//Check to see if touch position is on the play button or the a button is pressed
+			bool touchvalid = (touchx > 140 && touchx < 180) && (touchy > 195 && touchy < 240) && (touchdelay == 0);
+			bool apressed = (kDown & KEY_A);
+			
+			if ((apressed || touchvalid) && (dirsize > 0))
 			{
+				//Combine the current directory, a forward slash, and the selected file's name to get
+				//the path to try to begin playing from, and switch the application state
 				char fileloc[256] = "";
 				strcat(fileloc, getcurdir());
 				strcat(fileloc, "/");
 				strcat(fileloc, direntries[dirpos]);
-				int beginplay = playfile(fileloc);
-				appstate = 1;
-				if (beginplay > 0)
-				{
-					errexit(beginplay);
-				}
+				int beginplay = 0;
+				
+				if (selectiontype == SELTYPE_AUDIO) { beginplay = playlist_play_file(fileloc); appstate = STATE_PLAYING; }
+				if (selectiontype == SELTYPE_PLAYLIST) { beginplay = playlist_play_list(fileloc); }
+				
+				if (beginplay > 0) { errexit(beginplay); }
 			}
 			
+			if(touchvalid) { touchdelay = 15; }
+			
+			
+			//Move the selector up and down the list
 			if (kDown & KEY_DDOWN)
 			{
-				if (dirpos < dirsize - 1)
-				{
-					dirpos++;
-				}
+				if (dirpos < dirsize - 1) { dirpos++; }
 			}
 			else if (kDown & KEY_DUP)
 			{
-				if (dirpos > 0)
-				{
-					dirpos--;
-				}
+				if (dirpos > 0)	{ dirpos--; }
 			}
 			
-			if ((kDown & KEY_TOUCH) && (touchdelay == 0))
+			if (kDown & KEY_L && selectiontype == SELTYPE_PLAYLIST)
 			{
-				if ((touchx > 140 && touchx < 180) && (touchy > 195 && touchy < 240) && (dirsize > 0))
-				{
-					char fileloc[256] = "";
-					strcat(fileloc, getcurdir());
-					strcat(fileloc, "/");
-					strcat(fileloc, direntries[dirpos]);
-					int beginplay = playfile(fileloc);
-					appstate = 1;
-					if (beginplay > 0)
-					{
-						errexit(beginplay);
-					}
-					touchdelay = 20;
-				}
+				selectiontype = SELTYPE_AUDIO;
+				dirpos = 0;
+				dirsize = getdirsize(selectiontype);
+				gui_set_table_length(dirsize);
+				buildentries(direntries, getalldirsize(), selectiontype);
+			}
+			if (kDown & KEY_R && selectiontype == SELTYPE_AUDIO)
+			{
+				selectiontype = SELTYPE_PLAYLIST;
+				dirpos = 0;
+				dirsize = getdirsize(selectiontype);
+				gui_set_table_length(dirsize);
+				buildentries(direntries, getalldirsize(), selectiontype);
 			}
 		}
-		else if (appstate == 1)
+		
+		//Handle audio playback
+		else if (appstate == STATE_PLAYING)
 		{
-			//Playback controls
+			//Playback controls : Pause/Play
 			if (kDown & KEY_A)
 			{
 				toggle_playback();
 			}
 			
+			//Playback controls : Stop and return to selection
 			if (kDown & KEY_B)
 			{
 				appstate = 0;
@@ -230,6 +290,7 @@ int main()
 				}
 			}
 			
+			//Playback controls : Previous
 			if (kDown & KEY_L)
 			{
 				prev(direntries, &dirpos, dirsize);
@@ -239,6 +300,7 @@ int main()
 				}
 			}
 			
+			//Playback controls : Next
 			if (kDown & KEY_R)
 			{
 				skip(direntries, &dirpos, dirsize);
@@ -248,14 +310,18 @@ int main()
 				}
 			}
 			
+			
+			//Touch input
 			if ((kDown & KEY_TOUCH) && (touchdelay == 0))
 			{
+				//Playback controls : Pause/Play (touch)
 				if ((touchx > 140 && touchx < 180) && (touchy > 195 && touchy < 240))
 				{
 					toggle_playback();
-					touchdelay = 20;
+					touchdelay = 15;
 				}
 				
+				//Playback controls : Seek
 				if ((touchx > 40 && touchx < 280) && (touchy > 155 && touchy < 170))
 				{
 					seekaudio(((touchx - 41) / 238.0) * 100);
@@ -264,10 +330,8 @@ int main()
 			}
 		}
 		
-		if (touchdelay > 0)
-		{
-			touchdelay--;
-		}
+		//Constantly decrement touch input delay counter
+		if (touchdelay > 0)	{ touchdelay--; }
 	}
 	
 	cleanexit();

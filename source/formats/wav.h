@@ -11,7 +11,7 @@ typedef enum
 	WAVERR_DW_FAIL = 0x21,
 	WAVERR_EXTRA_CHANNELS = 0x22,
 	WAVERR_MULTIPLE = 0x23
-} WAV_Errors;
+} WAVError;
 
 /**
  * @brief Gets the sample rate of the audio
@@ -63,7 +63,7 @@ int get_bufsizewav(void);
 /**
  * @brief Verifies that a file is a proper wav audio file
  * 
- * @return One of WAV_Errors
+ * @return One of WAVError
  */
 int process_headerwav(void);
 
@@ -72,6 +72,6 @@ int process_headerwav(void);
  *
  * @param filename Path to the audio file
  * 
- * @return One of WAV_Errors
+ * @return A WAVError
  */
 int init_audiowav(const char* filename);

@@ -10,12 +10,11 @@ gfxScreen_t targetscreen;
 
 char** entrytable;
 int* dirposptr;
-int entrytablelen;
+size_t entrytablelen;
 bool drawing = false;
 
 void gui_init(char** entrytableptr, int* dirposptrinput)
 {
-	entrytablelen = *dirposptrinput;
 	entrytable = entrytableptr;
 	dirposptr = dirposptrinput;
 	
@@ -30,6 +29,11 @@ void gui_init(char** entrytableptr, int* dirposptrinput)
 	pp2d_load_texture_png(1, "romfs:/play.png");
 	
 	pp2d_set_3D(1);
+}
+
+void gui_set_table_length(size_t length)
+{
+	entrytablelen = length;
 }
 
 void gui_draw_play(bool playing)
@@ -71,6 +75,18 @@ void gui_prepare_frame(gfxScreen_t target, gfx3dSide_t side)
 	if (targetscreen == GFX_BOTTOM)
 	{
 		pp2d_draw_rectangle(0, 0, 320, 240, clear_color_bot);
+	}
+}
+
+void gui_draw_selection(int selectiontype)
+{
+	if (selectiontype == 0) //SELTYPE_AUDIO
+	{
+		gui_printc(235, 0, col_grey, "R: Playlists");
+	}
+	else if (selectiontype == 1) //SELTYPE_PLAYLIST
+	{
+		gui_printc(0, 0, col_grey, "L: Audio Files");
 	}
 }
 
@@ -161,15 +177,15 @@ void gui_draw_frame(int state)
 			else
 			{
 				gui_printc(0, 20, col_black, entrytable[*dirposptr]);
-			}
-			
-			if (*dirposptr < entrytablelen - 1)
-			{
-				gui_printc(20, 40, col_black, entrytable[*dirposptr + 1]);
-			}
-			if (*dirposptr < entrytablelen - 2)
-			{
-				gui_printc(40, 60, col_black, entrytable[*dirposptr + 2]);
+				
+				if (*dirposptr < entrytablelen - 1)
+				{
+					gui_printc(20, 40, col_black, entrytable[*dirposptr + 1]);
+				}
+				if (*dirposptr < entrytablelen - 2)
+				{
+					gui_printc(40, 60, col_black, entrytable[*dirposptr + 2]);
+				}
 			}
 		}
 	}

@@ -69,17 +69,24 @@ int recognizefiletype(FILE* unknownfile)
 	return 3;
 }
 
-int getdirsize()
+int getdirsize(int type)
 {
+	resetdir();
 	int i = 0;
 	struct dirent* direntry;
 	direntry = streamentry();
 	while (direntry != NULL)
 	{
-		if (detectfiletype(direntry->d_name) != 3)
+		if (type == 0)
 		{
-			i++;
+			if (detectfiletype(direntry->d_name) != 3) { i++; }
 		}
+		
+		else if (type == 1)
+		{
+			if (strstr(direntry->d_name, ".m3u") != NULL) { i++; }
+		}
+		
 		direntry = streamentry();
 	}
 	resetdir();
@@ -121,7 +128,7 @@ void resetdir()
 int isdirectory(char* path)
 {
 	struct stat path_stat;
-    stat(filepath, &path_stat);
+    stat(path, &path_stat);
 	if (S_ISDIR(path_stat.st_mode) == 0)
 	{
 		return 1;
@@ -130,7 +137,7 @@ int isdirectory(char* path)
 	return 0;
 }
 
-void buildentries(char** entryarray, int length)
+void buildentries(char** entryarray, int length, int entrytypes)
 {
 	resetdir();
 	char* entry;
@@ -138,7 +145,14 @@ void buildentries(char** entryarray, int length)
 	for(int i = 0; i < length; i++)
 	{
 		entry = readdir(dirstream)->d_name;
-		if (detectfiletype(entry) != 3)
+		if (entrytypes == 0 && detectfiletype(entry) != 3)
+		{
+			void* entrydest = malloc(strlen(entry) + 1);
+			strncpy(entrydest, entry, strlen(entry) + 1);
+			entryarray[entered] = entrydest;
+			entered++;
+		}
+		else if (entrytypes == 1 && strstr(entry, ".m3u") != NULL)
 		{
 			void* entrydest = malloc(strlen(entry) + 1);
 			strncpy(entrydest, entry, strlen(entry) + 1);

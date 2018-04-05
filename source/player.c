@@ -50,7 +50,7 @@ void free_buffers()
 	}
 }
 
-void exitplayer()
+void player_exit()
 {
 	//Free up the preiously allocated buffers
 	free_buffers();
@@ -93,7 +93,7 @@ int recognize(FILE* unknownfile)
 	return FORMAT_NONE;
 }
 
-bool* playerInit()
+bool* player_init()
 {
 	//Initialize the DSP (audio) chip for use
 	ndspInit();
@@ -300,6 +300,8 @@ int play_audio()
 	
 	return get_progress();
 }
+
+bool* get_playing_handle() { return &playing; }
 
 void toggle_playback()
 {
