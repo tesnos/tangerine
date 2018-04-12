@@ -17,7 +17,8 @@
 - [x] Update internal documentation
 - [ ] Actual file browsing
 - [ ] Support for more formats
-- [ ] Ability to create and play playlists
+- [ ] Ability to create playlists
+- [x] Ability to play playlists
 - [ ] Record and save bits of audio using the microphone like the built in app
 - [ ] UI overhaul (currently it's not super terrible, but it's definitely not where I want it to be)
 - [ ] Themes maybe?

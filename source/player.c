@@ -168,6 +168,7 @@ void seekaudio(int percentage)
 
 int playfile(const char* filename)
 {
+	svcOutputDebugString(filename, strlen(filename));
 	//Reset and
 	ndspChnReset(0);
 	//clear

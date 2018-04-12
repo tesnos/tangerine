@@ -15,7 +15,7 @@ typedef enum
 	PLERR_EXTM3U_NOT_SUPPORTED = 0x102,
 	PLERR_DIR_NOT_SUPPORTED = 0x103,
 	PLERR_HTTP_NOT_SUPPORTED = 0x104,
-	PLERR_BAD_PL = 0x105
+	PLERR_TOO_LONG = 0x105
 } PlaylistError;
 
 //playlist things
@@ -29,11 +29,17 @@ int playlist_play_file(char* path);
 
 int playlist_play_list(char* path);
 
+void playlist_play_previous();
+
+void playlist_play_next();
+
 int count_lines(FILE* targetfile);
 
 void get_lines(FILE* targetfile, char** linestorage, int linecount);
 
 int playlist_validate(FILE* unknownpl);
+
+void playlist_populate(FILE* validpl);
 
 void playlist_init();
 

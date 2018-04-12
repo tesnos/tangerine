@@ -31,12 +31,35 @@ int playlist_play_file(char* path)
 
 int playlist_play_list(char* path)
 {
+	playlist_clear();
 	FILE* m3ufile = fopen(path, "r");
+	
 	int validity = playlist_validate(m3ufile);
 	if (validity != PLERR_NONE) { return validity; } else { svcOutputDebugString("yo", strlen("yo")); }
-	//playlist_populate();
-	//return playlist_begin();
-	return 0;
+	
+	playlist_populate(m3ufile);
+	
+	return playlist_begin();
+}
+
+void playlist_play_previous()
+{
+	listpos--;
+	if(listpos < 0)
+	{
+		listpos = listsize - 1;
+	}
+	playfile(list[listpos]);
+}
+
+void playlist_play_next()
+{
+	listpos++;
+	if(listpos >= listsize)
+	{
+		listpos = 0;
+	}
+	playfile(list[listpos]);
 }
 
 int count_lines(FILE* targetfile)
@@ -74,7 +97,7 @@ void get_lines(FILE* targetfile, char** linestorage, int linecount)
 		
 		if (j == linecount - 1)
 		{
-			char lastline[n + 1];
+			char* lastline = malloc(n + 1);
 			strncpy(lastline, linebuf, n);
 			lastline[n] = '\0';
 			svcOutputDebugString(lastline, n);
@@ -104,6 +127,11 @@ void get_lines(FILE* targetfile, char** linestorage, int linecount)
 int playlist_validate(FILE* unknownpl)
 {
 	int pl_length = count_lines(unknownpl);
+	if (pl_length > 128)
+	{
+		return PLERR_TOO_LONG;
+	}
+	
 	char* pl_lines[pl_length];
 	get_lines(unknownpl, pl_lines, pl_length);
 	//char str[256];
@@ -134,6 +162,19 @@ int playlist_validate(FILE* unknownpl)
 		}
 	}
 	return PLERR_NONE;
+}
+
+void playlist_populate(FILE* validpl)
+{
+	int pl_length = count_lines(validpl);
+	
+	char* pl_lines[pl_length];
+	get_lines(validpl, pl_lines, pl_length);
+	
+	for (int i = 0; i < pl_length; i++)
+	{
+		playlist_append(pl_lines[i]);
+	}
 }
 
 void playlist_init()

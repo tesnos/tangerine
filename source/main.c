@@ -234,7 +234,7 @@ int main()
 				int beginplay = 0;
 				
 				if (selectiontype == SELTYPE_AUDIO) { beginplay = playlist_play_file(fileloc); appstate = STATE_PLAYING; }
-				if (selectiontype == SELTYPE_PLAYLIST) { beginplay = playlist_play_list(fileloc); }
+				if (selectiontype == SELTYPE_PLAYLIST) { beginplay = playlist_play_list(fileloc); appstate = STATE_PLAYING; }
 				
 				if (beginplay > 0) { errexit(beginplay); }
 			}
@@ -293,7 +293,15 @@ int main()
 			//Playback controls : Previous
 			if (kDown & KEY_L)
 			{
-				prev(direntries, &dirpos, dirsize);
+				if (selectiontype == SELTYPE_PLAYLIST)
+				{
+					playlist_play_previous();
+				}
+				else if (selectiontype == SELTYPE_AUDIO)
+				{
+					prev(direntries, &dirpos, dirsize);
+				}
+				
 				if (!*playing)
 				{
 					toggle_playback();
@@ -303,7 +311,15 @@ int main()
 			//Playback controls : Next
 			if (kDown & KEY_R)
 			{
-				skip(direntries, &dirpos, dirsize);
+				if (selectiontype == SELTYPE_PLAYLIST)
+				{
+					playlist_play_next();
+				}
+				else if (selectiontype == SELTYPE_AUDIO)
+				{
+					skip(direntries, &dirpos, dirsize);
+				}
+				
 				if (!*playing)
 				{
 					toggle_playback();
