@@ -178,11 +178,11 @@ void gui_draw_frame(int state)
 			{
 				gui_printc(0, 20, col_black, entrytable[*dirposptr]);
 				
-				if (*dirposptr < entrytablelen - 1)
+				if (*dirposptr < entrytablelen - 1 && entrytablelen > 1)
 				{
 					gui_printc(20, 40, col_black, entrytable[*dirposptr + 1]);
 				}
-				if (*dirposptr < entrytablelen - 2)
+				if (*dirposptr < entrytablelen - 2 && entrytablelen > 2)
 				{
 					gui_printc(40, 60, col_black, entrytable[*dirposptr + 2]);
 				}
