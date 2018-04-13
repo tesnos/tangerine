@@ -28,6 +28,38 @@ char* getcurdir()
 	return curdir;
 }
 
+void directory_go_into(char* dest)
+{
+	char deepdir[strlen(curdir) + 1 + strlen(dest) + 1];
+	strcpy(deepdir, getcurdir());
+	deepdir[strlen(curdir)] = '/';
+	strcpy(deepdir + strlen(curdir) + 1, dest);
+	deepdir[strlen(curdir) + strlen(dest) + 1] = '\0';
+	
+	curdir = deepdir;
+	
+	resetdir();
+}
+
+void directory_go_up()
+{
+	if (strcmp(getcurdir(), "/") == 0) { return; }
+	
+	for (int i = strlen(getcurdir()); i >= 0; i--)
+	{
+		if (getcurdir()[i] == '/')
+		{
+			char updir[i + 1];
+			strncpy(updir, getcurdir(), i);
+			updir[i] = '\0';
+			
+			curdir = updir;
+		}
+	}
+	
+	resetdir();
+}
+
 char* getentry()
 {
 	char* entry = readdir(dirstream)->d_name;

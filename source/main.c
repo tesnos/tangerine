@@ -141,7 +141,8 @@ int main()
 	
 	//Get number of music files in directory
 	int dirsize = getdirsize(selectiontype);
-	char* direntries[dirsize];
+	char* direntrytable[dirsize];
+	char** direntries = direntrytable;
 	//Create an int to hold where we are in the directory and give it and the pointer to our table
 	//to the gui + tell the gui how long the table is.
 	int dirpos = 0;
@@ -161,6 +162,8 @@ int main()
 		//Draw the static elements of this frame's graphics
 		gui_prepare_frame(GFX_TOP, GFX_LEFT);
 		gui_draw_frame(appstate);
+		
+		gui_printc(0, 0, RGBA8(0x00, 0x00, 0x00, 0xFF), getcurdir());
 		
 		gui_prepare_frame(GFX_BOTTOM, GFX_LEFT);
 		gui_draw_frame(appstate);
@@ -242,6 +245,46 @@ int main()
 			if(touchvalid) { touchdelay = 15; }
 			
 			
+			//File browsing
+			if (apressed && dirsize > 0)
+			{
+				directory_go_into(direntries[dirpos]);
+				
+				dirpos = 0;
+				if (dirsize <= getdirsize(selectiontype))
+				{
+					dirsize = getdirsize(selectiontype);
+				}
+				else
+				{
+					dirsize = getdirsize(selectiontype);
+					char* largertable[dirsize]; 
+					direntries = largertable;
+				}
+				gui_set_table_length(dirsize);
+				buildentries(direntries, getalldirsize(), selectiontype);
+			}
+			
+			if ((kDown & KEY_B) && (strcmp(getcurdir(), "/") != 0))
+			{
+				directory_go_up();
+				
+				dirpos = 0;
+				if (dirsize <= getdirsize(selectiontype))
+				{
+					dirsize = getdirsize(selectiontype);
+				}
+				else
+				{
+					dirsize = getdirsize(selectiontype);
+					char* largertable[dirsize]; 
+					direntries = largertable;
+				}
+				gui_set_table_length(dirsize);
+				buildentries(direntries, getalldirsize(), selectiontype);
+			}
+			
+			
 			//Move the selector up and down the list
 			if (kDown & KEY_DDOWN)
 			{
@@ -256,15 +299,32 @@ int main()
 			{
 				selectiontype = SELTYPE_AUDIO;
 				dirpos = 0;
-				dirsize = getdirsize(selectiontype);
+				if (dirsize <= getdirsize(selectiontype))
+				{
+					dirsize = getdirsize(selectiontype);
+				}
+				else
+				{
+					dirsize = getdirsize(selectiontype);
+					char* largertable[dirsize]; 
+					direntries = largertable;
+				}
 				gui_set_table_length(dirsize);
 				buildentries(direntries, getalldirsize(), selectiontype);
 			}
 			if (kDown & KEY_R && selectiontype == SELTYPE_AUDIO)
 			{
 				selectiontype = SELTYPE_PLAYLIST;
-				dirpos = 0;
-				dirsize = getdirsize(selectiontype);
+				if (dirsize <= getdirsize(selectiontype))
+				{
+					dirsize = getdirsize(selectiontype);
+				}
+				else
+				{
+					dirsize = getdirsize(selectiontype);
+					char* largertable[dirsize]; 
+					direntries = largertable;
+				}
 				gui_set_table_length(dirsize);
 				buildentries(direntries, getalldirsize(), selectiontype);
 			}

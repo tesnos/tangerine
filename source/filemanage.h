@@ -32,6 +32,10 @@ struct dirent* streamentry(void);
  */
 char* getcurdir(void);
 
+void directory_go_into(char* dest);
+
+void directory_go_up(void);
+
 /**
  * @brief Returns the next entry from the current directory's name, and prepends the current directory
  * 
