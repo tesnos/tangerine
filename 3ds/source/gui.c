@@ -6,7 +6,10 @@ char str[256];
 const uint32_t clear_color_top = col_white;
 const uint32_t clear_color_bot = col_white;
 
-gfxScreen_t targetscreen;
+C3D_RenderTarget* topscreen;
+C3D_RenderTarget* botscreen;
+
+C3D_RenderTarget* targetscreen;
 
 char** entrytable;
 int* dirposptr;
@@ -19,7 +22,13 @@ void gui_init(char** entrytableptr, int* dirposptrinput)
 	dirposptr = dirposptrinput;
 	
 	//Initialize graphics library
-	pp2d_init();
+	gfxInitDefault();
+	C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
+	C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
+	C2D_Prepare();
+	
+	topscreen = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
+	botscreen = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
 	
 	//Configure default colors for top/bottom screens and disable 3D
 	pp2d_set_screen_color(GFX_TOP, clear_color_top);
@@ -54,19 +63,28 @@ void gui_draw_progress(float percent)
 	pp2d_draw_rectangle(41, 161, (int) (238 * (percent / 100)), 5, col_base);
 }
 
-void gui_prepare_frame(gfxScreen_t target, gfx3dSide_t side)
+void gui_prepare_frame(DrawScreen target)
 {
-	targetscreen = target;
 	//Begin drawing to whatever place
 	if (!drawing)
 	{
-		pp2d_begin_draw(targetscreen, side);
+		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
+		C2D_TargetClear(topscreen, clear_color_top);
+		C2D_TargetClear(botscreen, clear_color_bot);
 		drawing = true;
 	}
-	else
+	
+	if (target == SCREEN_TOP)
 	{
-		pp2d_draw_on(targetscreen, side);
+		C2D_SceneBegin(topscreen);
+		targetscreen = topscreen;
 	}
+	else if (target == SCREEN_BOT)
+	{
+		C2D_SceneBegin(botscreen);
+		targetscreen = botscreen;
+	}
+	
 	//And then clear it (top and bottom screen are different sizes, 400 and 320 respectively)
 	if (targetscreen == GFX_TOP)
 	{
@@ -199,5 +217,7 @@ void gui_finish_frame()
 
 void gui_exit()
 {
-	pp2d_exit();
+	C3D_Fini();
+	C2D_Fini();
+	gfxExit();
 }

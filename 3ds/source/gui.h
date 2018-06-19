@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include "pp2d/pp2d.h"
+#include <citro2d.h>
 
 //Define colors, any commented out here are no longer in use
 #define col_white RGBA8(0xFF, 0xFF, 0xFF, 0xFF)
@@ -20,6 +20,12 @@
 #define col_base RGBA8(0x29, 0x71, 0xEE, 0xFF)
 #define col_orange RGBA8(0xFF, 0xA5, 0x00, 0xFF)
 #define col_yellow RGBA8(0xFF, 0xFF, 0x00, 0xFF)
+
+typedef enum
+{
+	SCREEN_TOP,
+	SCREEN_BOT
+} DrawScreen;
 
 /**
  * @brief Gets everything prepared to use the gui
