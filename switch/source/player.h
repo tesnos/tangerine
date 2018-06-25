@@ -1,8 +1,8 @@
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include <malloc.h>
-#include <switch.h>
+
+#include "common.h"
 
 void player_init(void);
 

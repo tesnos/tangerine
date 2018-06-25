@@ -24,6 +24,34 @@ void graphics_get_dimensions(u32* widthptr, u32* heightptr)
 	*heightptr = framebuf_height;
 }
 
+u32 graphics_get_theme_color()
+{
+	if (themeid == ColorSetId_Light)
+	{
+		return THEME_COL_LIGHT;
+	}
+	else if (themeid == ColorSetId_Dark)
+	{
+		return THEME_COL_DARK;
+	}
+	
+	return THEME_COL_LIGHT;
+}
+
+u32 graphics_get_theme_color_font()
+{
+	if (themeid == ColorSetId_Light)
+	{
+		return FONT_COL_DARK;
+	}
+	else if (themeid == ColorSetId_Dark)
+	{
+		return FONT_COL_LIGHT;
+	}
+	
+	return FONT_COL_DARK;
+}
+
 u32 graphics_get_width() { return framebuf_width; }
 u32 graphics_get_height() { return framebuf_height; }
 
@@ -90,6 +118,22 @@ void graphics_draw_rect(int x, int y, int width, int height, u32 color)
 	{
 		for (int curx = x; curx < x + width; curx++)
 		{
+			graphics_setpixel(curx, cury, color);
+		}
+	}
+}
+
+void graphics_draw_rect_outlined(int x, int y, int width, int height, u32 color, u32 outline_color, int outline_width)
+{
+	for (int cury = y; cury < y + height; cury++)
+	{
+		for (int curx = x; curx < x + width; curx++)
+		{
+			if (((curx - x) < outline_width || (curx - x) > width - outline_width) || ((cury - y) < outline_width || (cury - y) > height - outline_width))
+			{
+				graphics_setpixel(curx, cury, outline_color);
+				continue;
+			}
 			graphics_setpixel(curx, cury, color);
 		}
 	}

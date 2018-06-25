@@ -2,9 +2,11 @@
 
 #include "graphics/gui.h"
 #include "player.h"
+#include "filemanage.h"
 
 int main(int argc, char** argv)
 {
+	file_init();
 	gui_init();
 	player_init();
 	
@@ -19,6 +21,7 @@ int main(int argc, char** argv)
 		
 		gui_beginframe();
 		gui_drawframe(0);
+		gui_draw_file_boxes(2);
 		gui_endframe();
 		
 		player_updateaudio();
@@ -27,5 +30,6 @@ int main(int argc, char** argv)
 	
 	player_exit();
 	gui_exit();
+	file_exit();
 	return 0;
 }

@@ -2,6 +2,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#include "common.h"
+
 #define MP3BUFSIZE 4096
 
 //Errors that may be returned by process_header

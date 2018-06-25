@@ -1,195 +1,241 @@
 #include "filemanage.h"
 
-DIR* dirstream;
+const char* nodata = "?\0";
+const char* newline = "\n\0";
+const char* nodatanl = "?\n\0";
+const char* datapath = "/switch/nxxp/data/\0";
+const char* picdataext = ".png\0";
+const char* datdataext = ".dat\0";
 
-char defaultdir[7] = "/music\0";
-char* curdir = defaultdir;
-int tolddir = 0;
+char* curdir_path = "/music\0";
+DIR* curdir;
 
-void files_init()
+void file_init()
 {
-	mkdir("/music", 777);
-	startread(curdir);
+	mkdir(curdir, 777);
+	curdir = opendir(curdir_path);
+	mkdir("/switch/nxxp/data", 777);
 }
 
-void startread(char* dirpath)
+void file_reset_dir()
 {
-	curdir = dirpath;
-	dirstream = opendir(curdir);
+	rewinddir(curdir);
 }
 
-struct dirent* streamentry()
+char* file_extract_path_fname(char* filepath)
 {
-	return readdir(dirstream);
-}
-
-char* getcurdir()
-{
-	return curdir;
-}
-
-void directory_go_into(char* dest)
-{
-	char deepdir[strlen(curdir) + 1 + strlen(dest) + 1];
-	strcpy(deepdir, getcurdir());
-	deepdir[strlen(curdir)] = '/';
-	strcpy(deepdir + strlen(curdir) + 1, dest);
-	deepdir[strlen(curdir) + strlen(dest) + 1] = '\0';
-	
-	curdir = deepdir;
-	
-	resetdir();
-}
-
-void directory_go_up()
-{
-	if (strcmp(getcurdir(), "/") == 0) { return; }
-	
-	for (int i = strlen(getcurdir()); i >= 0; i--)
+	char* fname;
+	int i;
+	for (i = strlen(filepath); i >= 0; i--)
 	{
-		if (getcurdir()[i] == '/')
+		if (filepath == 0x2F) { break; }
+	}
+	fname = malloc(strlen(filepath) - i);
+	strncpy(fname, filepath + (strlen(filepath) - i), i);
+	fname[strlen(filepath) - i] = 0x00;
+	
+	return fname;
+}
+
+TrackMetadata file_check_data(char* unknownfile_path)
+{
+	FILE* unknownfile = fopen(unknownfile_path, "rb");
+	
+	unsigned char digest[16];
+	struct MD5Context context;
+	MD5Init(&context);
+	
+	fseek(unknownfile, 0, SEEK_END);
+	int file_len = ftell(unknownfile);
+	fseek(unknownfile, 0, SEEK_SET);
+	
+	
+	void* file_buffer = malloc(0x80000);
+	for (int i = 0; i < floor(file_len / 0x80000); i++)
+	{
+		fread(file_buffer, 0x80000, 1, unknownfile);
+		MD5Update(&context, file_buffer, 0x80000);
+	}
+	
+	file_len = file_len - ftell(unknownfile);
+	fread(file_buffer, file_len, 1, unknownfile);
+	MD5Update(&context, file_buffer, file_len);
+	MD5Final(digest, &context);
+	free(file_buffer);
+	
+	//Digest size + size of "/switch/nxxp/data/" + size of ".png"/".dat" + terminator
+	char* imgpicpath = malloc(18 + 16 + 4 + 1);
+	strcpy(imgpicpath, datapath);
+	strcpy(imgpicpath + 18, digest);
+	strcpy(imgpicpath + 18 + 16, picdataext);
+	imgpicpath[18 + 16 + 4] = 0x00;
+	char* imgdatpath = malloc(16 + 16 + 4 + 1);
+	strcpy(imgdatpath, datapath);
+	strcpy(imgdatpath + 18, digest);
+	strcpy(imgdatpath + 18 + 16, datdataext);
+	imgdatpath[18 + 16 + 4] = 0x00;
+	
+	TrackMetadata* meta;
+	
+	FILE* imgmeta = fopen(imgdatpath, "rb");
+	FILE* imgpic = fopen(imgpicpath, "rb");
+	if (imgmeta == NULL || imgpic == NULL)
+	{
+		imgmeta = fopen(imgdatpath, "wb");
+		imgpic = fopen(imgpicpath, "wb");
+		
+		FileFormat = file_determine_format_ptr(unknownfile);
+		if (FileFormat == Format_None)
 		{
-			char updir[i + 1];
-			strncpy(updir, getcurdir(), i);
-			updir[i] = '\0';
+			//TODO: Put error here
+		}
+		else if (FileFormat == Format_Wav)
+		{
+			fwrite(nodatanl, strlen(nodatanl), 1, imgpic);
+			fwrite(nodatanl, strlen(nodatanl), 1, imgpic);
+			fwrite(nodatanl, strlen(nodatanl), 1, imgpic);
+			fwrite(nodata, strlen(nodata), 1, imgpic);
+			meta->picdata = NULL;
+			meta->name = file_extract_path_fname(unknownfile_path);
+			meta->artist = nodata;
+			meta->album = nodata;
+		}
+		else if (FileFormat == Format_Flac)
+		{
 			
-			curdir = updir;
 		}
-	}
-	
-	resetdir();
-}
-
-char* getentry()
-{
-	char* entry = readdir(dirstream)->d_name;
-	void* entrydest = malloc(strlen(entry) + 1);
-	strncpy(entrydest, entry, strlen(entry) + 1);
-	return entrydest;
-}
-
-void endread()
-{
-	closedir(dirstream);
-}
-
-int recognizefiletype(FILE* unknownfile)
-{
-	int8_t header[4];
-	int wav_magic = 0x52494646;
-	int flac_magic = 0x664c6143;
-	int mp3_magic0 = 0x494433;
-	int mp3_magic1 = 0xFFFB;
-	
-	fseek(unknownfile, 0, SEEK_SET);
-	fread(header, 1, 5, unknownfile);
-	fseek(unknownfile, 0, SEEK_SET);
-	
-	if ((header[0] << 24) + (header[1] << 16) + (header[2] << 8) + (header[3]) == wav_magic)
-	{
-		return 0;
-	}
-	else if ((header[0] << 24) + (header[1] << 16) + (header[2] << 8) + (header[3]) == flac_magic)
-	{
-		return 1;
-	}
-	else if (((header[0] << 16) + (header[1] << 8) + (header[2]) == mp3_magic0) || ((header[0] << 8) + (header[1]) == mp3_magic1))
-	{
-		return 2;
-	}
-	
-	return 3;
-}
-
-int getdirsize(int type)
-{
-	resetdir();
-	int i = 0;
-	struct dirent* direntry;
-	direntry = streamentry();
-	while (direntry != NULL)
-	{
-		if (type == 0)
+		else if (FileFormat == Format_Mp3)
 		{
-			if (detectfiletype(direntry->d_name) != 3) { i++; }
+			
 		}
+	}
+	else
+	{
 		
-		else if (type == 1)
-		{
-			if (strstr(direntry->d_name, ".m3u") != NULL) { i++; }
-		}
-		
-		direntry = streamentry();
-	}
-	resetdir();
-	return i;
-}
-
-int getalldirsize()
-{
-	int i = 0;
-	struct dirent* direntry;
-	direntry = streamentry();
-	while (direntry != NULL)
-	{
-		i++;
-		direntry = streamentry();
-	}
-	resetdir();
-	return i;
-}
-
-int detectfiletype(char* filename)
-{
-	char path[256] = "/music";
-	//strcat(path, getcurdir());
-	strcat(path, "/");
-	strcat(path, filename);
-	FILE* paf = fopen(path, "rb");
-	int ftype = recognizefiletype(paf);
-	fclose(paf);
-	return ftype;
-}
-
-void resetdir()
-{
-	endread();
-	startread(curdir);
-}
-
-int isdirectory(char* path)
-{
-	struct stat path_stat;
-    stat(path, &path_stat);
-	if (S_ISDIR(path_stat.st_mode) == 0)
-	{
-		return 1;
 	}
 	
-	return 0;
+	fclose(imgmeta);
+	fclose(imgpic);
+	fclose(unknownfile);
+	
+	return meta;
 }
 
-void buildentries(char** entryarray, int length, int entrytypes)
+int file_get_dir_size()
 {
-	resetdir();
-	char* entry;
-	int entered = 0;
-	for(int i = 0; i < length; i++)
+	int count = 0;
+	while (true)
 	{
-		entry = readdir(dirstream)->d_name;
-		if (entrytypes == 0 && detectfiletype(entry) != 3)
-		{
-			void* entrydest = malloc(strlen(entry) + 1);
-			strncpy(entrydest, entry, strlen(entry) + 1);
-			entryarray[entered] = entrydest;
-			entered++;
-		}
-		else if (entrytypes == 1 && strstr(entry, ".m3u") != NULL)
-		{
-			void* entrydest = malloc(strlen(entry) + 1);
-			strncpy(entrydest, entry, strlen(entry) + 1);
-			entryarray[entered] = entrydest;
-			entered++;
-		}
+		if (readdir(curdir) == NULL) { break; }
+		else { count++; }
 	}
+	
+	file_reset_dir();
+	return count;
+}
+
+char* file_change_dir_up()
+{
+	char* updir;
+	int i;
+	for (i = strlen(curdir_path); i >= 0; i--)
+	{
+		if (curdir_path[i] == 0x2F) { break; }
+	}
+	updir = malloc(i);
+	strncpy(updir, curdir_path, i);
+	updir[i - 1] = 0x00;
+	
+	return updir;
+}
+
+void file_change_dir(char* dir_path)
+{
+	closedir(curdir);
+	curdir_path = dir_path;
+	curdir = opendir(curdir_path);
+}
+
+char** file_list_dir()
+{
+	int dirsize = file_get_dir_size();
+	char** listings = malloc(dirsize * sizeof(char *));
+	struct dirent* listing;
+	
+	for (int i = 0; i < dirsize; i++)
+	{
+		listing = readdir(curdir);
+		listings[i] = malloc(strlen(listing->d_name) + 1);
+		strcpy(listings[i], listing->d_name);
+		listings[i][strlen(listing->d_name)] = 0x00;
+	}
+	
+	file_reset_dir();
+	return listings;
+}
+
+void file_free_dir_list(char** list, int length)
+{
+	for (int i = 0; i < length; i++)
+	{
+		free(list[i]);
+	}
+	free(list);
+}
+
+FileFormat file_determine_format_path(char* file_path)
+{
+	FILE* target_file = fopen(file_path, "rb");
+	u32 file_magic;
+	fread(&file_magic, 4, 1, target_file);
+	fclose(target_file);
+	
+	if (file_magic == 0x52494646)
+	{
+		return Format_Wav;
+	}
+	else if (file_magic == 0x664C6143)
+	{
+		return Format_Flac;
+	}
+	else if (file_magic == 0x494433 || file_magic == 0xFFFB)
+	{
+		return Format_Mp3;
+	}
+	else
+	{
+		return Format_None;
+	}
+}
+
+FileFormat file_determine_format_ptr(FILE* file_ptr)
+{
+	FILE* target_file = file_ptr;
+	long int oldpos = ftell(target_file);
+	fseek(target_file, 0, SEEK_SET);
+	u32 file_magic;
+	fread(&file_magic, 4, 1, target_file);
+	fseek(target_file, oldpos, SEEK_SET);
+	
+	if (file_magic == 0x52494646)
+	{
+		return Format_Wav;
+	}
+	else if (file_magic == 0x664C6143)
+	{
+		return Format_Flac;
+	}
+	else if (file_magic == 0x494433 || file_magic == 0xFFFB)
+	{
+		return Format_Mp3;
+	}
+	else
+	{
+		return Format_None;
+	}
+}
+
+void file_exit()
+{
+	closedir(curdir);
 }
