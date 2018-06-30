@@ -4,6 +4,7 @@
 drwav* pWav;
 long int wavprogress;
 bool wavdone = false;
+TrackMetadata tmd;
 
 int get_sampleratewav()
 {
@@ -90,4 +91,26 @@ int init_audiowav(const char* filename)
 	}
 	
 	return process_headerwav();
+}
+
+TrackMetadata* get_tmdwav(const char* filename)
+{
+	TrackMetadata* meta = malloc(sizeof(TrackMetadata));
+	meta->picdata[0] = (long) NULL;
+	
+	int i = strlen(filename); if (i > 256) { i = 256; }
+	for (; i >= 0; i--)
+	{
+		if (filename[i] == 0x2F) { break; }
+	}
+	
+	int fnamelen = strlen(filename) - i;
+	char* fname = malloc(fnamelen);
+	strncpy(fname, filename + i + 1, fnamelen);
+	fname[fnamelen] = 0x00;
+	
+	strcpy(meta->name, fname);
+	strcpy(meta->artist, nodata);
+	strcpy(meta->album, nodata);
+	return meta;
 }

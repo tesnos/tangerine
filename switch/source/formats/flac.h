@@ -1,5 +1,6 @@
-#include <stdio.h>
 #include <stdbool.h>
+
+#include "../common.h"
 
 #define FLACBUFSIZE 4096
 
@@ -75,3 +76,5 @@ int process_headerflac(void);
  * @return A FLACError
  */
 int init_audioflac(const char* filename);
+
+TrackMetadata* get_tmdflac(const char* filename);

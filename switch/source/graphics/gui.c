@@ -40,19 +40,33 @@ void gui_draw_file_boxes(int dirsize)
 	}
 }
 
-void gui_draw_file_box_data(int position, struct Graphics_Image* file_image, char* file_name)
+void gui_draw_file_box_data(int position, TrackMetadata* meta)
 {
-	graphics_draw_image_scaled((screenwidth/4) * 3.0625, screenheight/16 + ((screenheight/6) * (position + 0.25)), file_image, 0.0625);
-	graphics_draw_text((screenwidth/4) * 3.3125, screenheight/16 + ((screenheight/6) * (position + 0.4)), graphics_get_theme_color_font(), file_name);
+	struct Graphics_Image* metapic = NULL;
+	
+	if (meta->picdata[0] != (long) NULL)
+	{
+		metapic->width = 500;
+		metapic->height = 500;
+		metapic->ptr = meta->picdata;
+	}
+	else
+	{
+		metapic = noartimg;
+	}
+	
+	graphics_draw_image_scaled((screenwidth/4) * 3.0625, screenheight/16 + ((screenheight/6) * (position + 0.25)), metapic, 0.0625);
+	graphics_draw_text((screenwidth/4) * 3.3125, screenheight/16 + ((screenheight/6) * (position + 0.4)), graphics_get_theme_color_font(), meta->name);
 }
 
-void gui_beginframe()
+void gui_beginframe(char* asdf)
 {
 	graphics_beginframe();
 	screenwidth = graphics_get_width();
 	screenheight = graphics_get_height();
 	gui_clearscreen();
 	gui_draw_header();
+	graphics_draw_text(300, 300, COL_BLUE, asdf);
 }
 
 void gui_drawframe(int appstate)
@@ -72,7 +86,7 @@ void gui_endframe()
 
 void gui_blankframe()
 {
-	gui_beginframe();
+	//gui_beginframe();
 	gui_endframe();
 }
 

@@ -36,6 +36,7 @@ void read_samplesmp3(void* audiobuf)
 void exitmp3()
 {
 	mpg123_close(mpg);
+	mpg123_delete(mpg);
 	mpg = NULL;
 	samplerate = 0;
 	numchannels = 0;
@@ -98,4 +99,63 @@ int init_audiomp3(const char* filename)
 	if (initerror != MPG123_OK) { return initerror; }
 	
 	return process_headermp3();
+}
+
+TrackMetadata* get_tmdmp3(const char* filename)
+{
+	TrackMetadata* meta = malloc(sizeof(TrackMetadata));
+	
+	mpg123_init();
+	mpg = mpg123_new(NULL, NULL);
+	//enable picture processing
+	mpg123_param(mpg, MPG123_ADD_FLAGS, 0x10000, 0);
+	mpg123_open(mpg, filename);
+	
+	
+	mpg123_id3v1* id3v1 = NULL;
+	mpg123_id3v2* id3v2 = NULL;
+	
+	if (MPG123_ID3 & mpg123_meta_check(mpg))
+	{
+		mpg123_id3(mpg, &id3v1, &id3v2);
+	}
+	
+	
+	//Prefer id3v2 over id3v1
+	if (id3v2 != NULL)
+	{
+		mpg123_picture* pic;
+		for (int i = 0; i < id3v2->pictures; i++)
+		{
+			pic = &(id3v2->picture[i]);
+			if (pic->type != 3) //&& pic->type != 1)
+			{
+				continue;
+			}
+			
+			char* blep = pic->mime_type.p;
+			printf(blep);
+		}
+		meta->picdata[0] = (long) NULL;
+		strncpy(meta->name, id3v2->title->p, id3v2->title->fill);
+		strncpy(meta->artist, id3v2->artist->p, id3v2->artist->fill);
+		strncpy(meta->album, id3v2->album->p, id3v2->album->fill);
+	}
+	else if (id3v1 != NULL)
+	{
+		meta->picdata[0] = (long) NULL;
+		strncpy(meta->name, id3v1->title, 30);
+		strncpy(meta->artist, id3v1->artist, 30);
+		strncpy(meta->album, id3v1->album, 30);
+	}
+	else
+	{
+		clear_tmd(meta);
+	}
+	
+	mpg123_close(mpg);
+	mpg123_delete(mpg);
+	mpg = NULL;
+	
+	return meta;
 }

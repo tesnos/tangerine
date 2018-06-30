@@ -1,10 +1,12 @@
 #include <dirent.h>
 #include <malloc.h>
-#include <string.h>
 #include <math.h>
 
 #include "md5.h"
 #include "common.h"
+#include "formats/wav.h"
+#include "formats/flac.h"
+#include "formats/mp3.h"
 
 void file_init(void);
 
@@ -12,7 +14,11 @@ void file_reset_dir(void);
 
 char* file_extract_path_fname(char* filepath);
 
-TrackMetadata file_check_data(char* unknownfile_path);
+int file_get_size(FILE* unknownfile);
+
+char* file_get_next_line(FILE* textfile);
+
+TrackMetadata* file_check_data(char* unknownfile_path);
 
 int file_get_dir_size(void);
 

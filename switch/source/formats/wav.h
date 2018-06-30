@@ -1,5 +1,6 @@
-#include <stdio.h>
 #include <stdbool.h>
+
+#include "../common.h"
 
 #define DR_WAV_IMPLEMENTATION
 #define WAVBUFSIZE 4096
@@ -75,3 +76,5 @@ int process_headerwav(void);
  * @return A WAVError
  */
 int init_audiowav(const char* filename);
+
+TrackMetadata* get_tmdwav(const char* filename);

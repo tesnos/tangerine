@@ -98,3 +98,10 @@ int init_audioflac(const char* filename)
 	
 	return process_headerflac();
 }
+
+TrackMetadata* get_tmdflac(const char* filename)
+{
+	TrackMetadata* meta = malloc(sizeof(TrackMetadata));
+	
+	return meta;
+}

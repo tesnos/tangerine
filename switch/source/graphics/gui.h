@@ -1,4 +1,5 @@
 #include "graphics.h"
+#include "../common.h"
 
 //Format in hex is  0xAABBGGRR
 #define CLEAR_COL       0xFFFFE0E0
@@ -21,7 +22,9 @@ void gui_draw_header(void);
 
 void gui_draw_file_boxes(int dirsize);
 
-void gui_beginframe(void);
+void gui_draw_file_box_data(int position, TrackMetadata* meta);
+
+void gui_beginframe(char* asdf);
 
 void gui_drawframe(int appstate);
 

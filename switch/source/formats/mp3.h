@@ -1,8 +1,7 @@
 #include <mpg123.h>
 #include <stdbool.h>
-#include <stdio.h>
 
-#include "common.h"
+#include "../common.h"
 
 #define MP3BUFSIZE 4096
 
@@ -76,3 +75,5 @@ int process_headermp3(void);
  * @return A MP3Error or an mpg123 error code
  */
 int init_audiomp3(const char* filename);
+
+TrackMetadata* get_tmdmp3(const char* filename);
