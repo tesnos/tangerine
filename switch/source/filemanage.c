@@ -16,7 +16,20 @@ void file_init()
 
 void file_reset_dir()
 {
-	rewinddir(curdir);
+	closedir(curdir);
+	curdir = opendir(curdir_path);
+}
+
+char* file_concat_path_curdir(char* filepath)
+{
+	char* result = malloc(strlen(curdir_path) + 1 + strlen(filepath) + 1);
+	
+	strcpy(result, curdir_path);
+	result[strlen(curdir_path)] = 0x2F;
+	strcpy(result + strlen(curdir_path) + 1, filepath);
+	result[strlen(curdir_path) + 1 + strlen(filepath)] = 0x00;
+	
+	return result;
 }
 
 char* file_extract_path_fname(char* filepath)
@@ -156,7 +169,6 @@ TrackMetadata* file_check_data(char* unknownfile_path)
 		{
 			meta = get_tmdmp3(unknownfile_path);
 		}
-		meta = get_tmdwav(unknownfile_path);
 		
 		
 		if (meta->picdata[0] == (long) NULL)
@@ -230,22 +242,49 @@ void file_change_dir(char* dir_path)
 	curdir = opendir(curdir_path);
 }
 
-char** file_list_dir()
+void file_list_dir(char** listings)
 {
+	file_reset_dir();
+	
 	int dirsize = file_get_dir_size();
-	char** listings = malloc(dirsize * sizeof(char *));
 	struct dirent* listing;
+	char* entry;
 	
 	for (int i = 0; i < dirsize; i++)
 	{
 		listing = readdir(curdir);
-		listings[i] = malloc(strlen(listing->d_name) + 1);
-		strcpy(listings[i], listing->d_name);
-		listings[i][strlen(listing->d_name)] = 0x00;
+		entry = listing->d_name;
+		
+		char* entrydest = malloc(strlen(entry) + 1);
+		strncpy(entrydest, entry, strlen(entry) + 1);
+		listings[i] = entrydest;
 	}
 	
 	file_reset_dir();
-	return listings;
+}
+
+void file_list_dir_tracks(char** track_listings)
+{
+	int all_dirsize = file_get_dir_size();
+	char* all_listings[all_dirsize];
+	file_list_dir(all_listings);
+	
+	int track_listing_count = 0;
+	
+	for (int i = 0; i < all_dirsize; i++)
+	{
+		char* listing_path = file_concat_path_curdir(all_listings[i]);
+		FileFormat ff = file_determine_format_path(listing_path);
+		if (ff != Format_None)
+		{
+			track_listings[track_listing_count] = malloc(strlen(listing_path) + 1);
+			strcpy(track_listings[track_listing_count], listing_path);
+			track_listings[track_listing_count][strlen(listing_path)] = 0x00;
+			track_listing_count++;
+		}
+	}
+	
+	file_free_dir_list(all_listings, all_dirsize);
 }
 
 void file_free_dir_list(char** list, int length)
@@ -253,33 +292,6 @@ void file_free_dir_list(char** list, int length)
 	for (int i = 0; i < length; i++)
 	{
 		free(list[i]);
-	}
-	free(list);
-}
-
-FileFormat file_determine_format_path(char* file_path)
-{
-	FILE* target_file = fopen(file_path, "rb");
-	char file_magic[4];
-	fread((char *) file_magic, 4, 1, target_file);
-	fclose(target_file);
-	u32 file_magic_int = (file_magic[0] << 24) + (file_magic[1] << 16) + (file_magic[2] << 8) + (file_magic[3]);
-	
-	if (file_magic_int == 0x52494646)
-	{
-		return Format_Wav;
-	}
-	else if (file_magic_int == 0x664C6143)
-	{
-		return Format_Flac;
-	}
-	else if (file_magic_int == 0x494433 || file_magic_int == 0xFFFB)
-	{
-		return Format_Mp3;
-	}
-	else
-	{
-		return Format_None;
 	}
 }
 
@@ -301,7 +313,7 @@ FileFormat file_determine_format_ptr(FILE* file_ptr)
 	{
 		return Format_Flac;
 	}
-	else if (file_magic_int == 0x494433 || file_magic_int == 0xFFFB)
+	else if ((file_magic_int & 0xFFFFFF00) == 0x49443300 || (file_magic_int & 0xFFFF0000) == 0xFFFB0000)
 	{
 		return Format_Mp3;
 	}
@@ -309,6 +321,43 @@ FileFormat file_determine_format_ptr(FILE* file_ptr)
 	{
 		return Format_None;
 	}
+}
+
+FileFormat file_determine_format_path(char* file_path)
+{
+	FILE* target_file = fopen(file_path, "rb");
+	FileFormat format = file_determine_format_ptr(target_file);
+	fclose(target_file);
+	
+	return format;
+}
+
+int file_get_dir_size_tracks()
+{
+	int count = 0;
+	struct dirent* listing;
+	while (true)
+	{
+		listing = readdir(curdir);
+		if (listing == NULL) { break; }
+		else
+		{
+			char listingpath[strlen(curdir_path) + 1 + strlen(listing->d_name) + 1];
+			strcpy(listingpath, curdir_path);
+			listingpath[strlen(curdir_path)] = 0x2F;
+			strcpy(listingpath + strlen(curdir_path) + 1, listing->d_name);
+			listingpath[strlen(curdir_path) + 1 + strlen(listing->d_name)] = 0x00;
+			
+			
+			if (file_determine_format_path(listingpath) != Format_None)
+			{
+				count++;
+			}
+		}
+	}
+	
+	file_reset_dir();
+	return count;
 }
 
 void file_exit()

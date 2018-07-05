@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 #include "graphics.h"
 #include "../common.h"
 
@@ -12,6 +14,10 @@
 #define COL_BLACK       0xFF000000
 #define COL_LIGHTGREY   0xFFC7C7C7
 
+#define COL_PULSE_BASE  0xFF8CBF00
+
+u32 gui_selection_pulse_color(void);
+
 void gui_init(void);
 
 void gui_fillscreen(u32 fillcolor);
@@ -20,11 +26,11 @@ void gui_clearscreen(void);
 
 void gui_draw_header(void);
 
-void gui_draw_file_boxes(int dirsize);
+void gui_draw_file_boxes(int dirsize, TrackMetadata** metadb, int selectedbox, int dboffset);
 
 void gui_draw_file_box_data(int position, TrackMetadata* meta);
 
-void gui_beginframe(char* asdf);
+void gui_beginframe(void);
 
 void gui_drawframe(int appstate);
 

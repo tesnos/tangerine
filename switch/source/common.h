@@ -1,5 +1,6 @@
 #include <switch.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #ifndef COMMON_H_
